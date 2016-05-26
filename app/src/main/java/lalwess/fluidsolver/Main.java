@@ -29,19 +29,6 @@ import java.util.ArrayList;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import Entity_types.Entity;
-import Entity_types.SkySphere;
-import EventManagers.*;
-import MenuObjects.UIMenuManager;
-import MenuObjects.UIObjectFactory;
-import Particles.ParticleEvents;
-import Particles.ParticleManager;
-import baseinterfacesclasses.OrbitData;
-import baseinterfacesclasses.TargetSelection;
-import gameObjects.EntityFactory;
-import gameObjects.FactoryObserver;
-
-;
 
 /**
  * @author Christopher Lawless
@@ -87,7 +74,7 @@ public class Main extends Activity implements OnScaleGestureListener /*,Observer
 	private ScaleGestureDetector mScaleDetector;
 	private GestureDetector tapdetection;
 
-	private Texture font = null;
+	//private Texture font = null;
 	private Boolean texturesLoaded= false;
 	//////////////////////////////////This needs to be seperated from the graphical stuff above somehow.
 
@@ -116,8 +103,9 @@ public class Main extends Activity implements OnScaleGestureListener /*,Observer
 		if(master == null)
 		{
 			//This Sets Renderer , I may want to seperate these classes!
-
+			setContentView(R.layout.activity_main); //or whatever the layout you want to use
 			mGLView = (GLSurfaceView) findViewById(R.id.graphics_glsurfaceview1);
+
 
 			//mGLView = new GLSurfaceView(getApplication());
 			// Enable the OpenGL ES2.0 context
@@ -238,8 +226,8 @@ public class Main extends Activity implements OnScaleGestureListener /*,Observer
             Resources res = getResources();
 
 			//time = System.currentTimeMillis();
-			font = new Texture(res.openRawResource(R.raw.numbers));
-			font.setMipmap(false);	
+			//font = new Texture(res.openRawResource(R.raw.numbers));
+		//	font.setMipmap(false);
 		}
 
 		public void onSurfaceChanged(GL10 gl, int w, int h) {
@@ -320,24 +308,10 @@ public class Main extends Activity implements OnScaleGestureListener /*,Observer
 			 previous= System.currentTimeMillis();
 			 current = System.currentTimeMillis();
 			}
-//			allGameObjects.INSTANCE.factoryObserver.handleRemovals();
-//			allGameObjects.INSTANCE.particleManager.doRemovals();
-//
-//			allGameObjects.INSTANCE.skysphere.Update();
-//
-//			allGameObjects.INSTANCE.cameraCursor.cameraFollow();
-//			allGameObjects.INSTANCE.menumanager.cameraUpdate();
 
 
-			if(useRetroRender ==false) {
-				allGameObjects.INSTANCE.processHandler.doPostProcess(fb);
-			}
-			else
-			{
-				allGameObjects.INSTANCE.processHandler.doRetroPostProcess(fb);
-			}
 
-			blitNumber(lfps, 5, 5);
+		//	blitNumber(lfps, 5, 5);
 			
 			fb.display();
 
@@ -351,28 +325,25 @@ public class Main extends Activity implements OnScaleGestureListener /*,Observer
 
 
 
-		private void blitNumber(int number, int x, int y) {
-			if (font != null) {
-				String sNum = Integer.toString(number);
-
-				for (int i = 0; i < sNum.length(); i++) {
-					char cNum = sNum.charAt(i);
-					int iNum = cNum - 48;
-					fb.blit(font, iNum * 5, 0, x, y, 5, 9, 5, 9, 10, true, null);
-					
-					x += 5;
-				}
-			}
-		}
+//		private void blitNumber(int number, int x, int y) {
+//			if (font != null) {
+//				String sNum = Integer.toString(number);
+//
+//				for (int i = 0; i < sNum.length(); i++) {
+//					char cNum = sNum.charAt(i);
+//					int iNum = cNum - 48;
+//					fb.blit(font, iNum * 5, 0, x, y, 5, 9, 5, 9, 10, true, null);
+//
+//					x += 5;
+//				}
+//			}
+//		}
 	}
 
 
 
 
-	public void pauseAction()
-	{
-		allGameObjects.INSTANCE.gameCommand.pauseGame();
-	}
+
 
 	public boolean onScale(ScaleGestureDetector detector) {
 		return true;
@@ -392,16 +363,13 @@ private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureLis
     @Override
     public boolean onScale(ScaleGestureDetector detector) {
         //I NEED TO FIND A WAY TO CHECK IF THIS IS ON AN OBJECT OR NOT?
-		allGameObjects.INSTANCE.cameraCursor.setScaleFactor(detector);
+		//allGameObjects.INSTANCE.cameraCursor.setScaleFactor(detector);
         return true;
     }
 }
 
 
-public void shieldTest(View view) {
-	allShields.execute();
 
-}
 
 
 	public void asteroidTest(View view) {
@@ -413,10 +381,7 @@ public void shieldTest(View view) {
 		SimpleVector pucpos= new SimpleVector( 20,0,40);
 
 
-		OrbitData orbitData = new OrbitData(ctop, 20f, 0, SimpleVector.ORIGIN);
-		allGameObjects.INSTANCE.object_factory.createAsteroid(SimpleVector.ORIGIN,SimpleVector.ORIGIN,
-				EntityFactory.states.orbitState
-				,orbitData);
+
 
 	}
 
@@ -436,17 +401,6 @@ public void shieldTest(View view) {
 	}
 
 
-
-	public void testLoad(View view)
-	{
-
-		allGameObjects.INSTANCE.gameeventmanager.testLevel();
-	}
-	public void clearAll(View view)
-	{
-
-		allGameObjects.INSTANCE.gameeventmanager.clearGame();
-	}
 
 
 private class TapListener implements OnGestureListener, GestureDetector.OnDoubleTapListener
@@ -490,7 +444,7 @@ private class TapListener implements OnGestureListener, GestureDetector.OnDouble
 	public boolean onDoubleTap(MotionEvent e) {
         int left = mGLView.getLeft();
         int top  =mGLView.getTop();
-		allGameObjects.INSTANCE.cameraCursor.onDoubleTap(e,fb, left, top);
+		//allGameObjects.INSTANCE.cameraCursor.onDoubleTap(e,fb, left, top);
 		return false;
 	}
 
@@ -498,7 +452,7 @@ private class TapListener implements OnGestureListener, GestureDetector.OnDouble
 	public boolean onSingleTapConfirmed(MotionEvent e) {
 		int left = mGLView.getLeft();
 		int top  =mGLView.getTop();
-		allGameObjects.INSTANCE.cameraCursor.onSingleTapConfirmed(e,fb, left, top);
+		//a/llGameObjects.INSTANCE.cameraCursor.onSingleTapConfirmed(e,fb, left, top);
 		//pauseAction();
         //cameraCursor.onDoubleTap(e,fb);
 		return false;

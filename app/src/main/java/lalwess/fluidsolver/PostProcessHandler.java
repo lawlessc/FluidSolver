@@ -5,23 +5,15 @@ import android.graphics.Color;
 
 import com.threed.jpct.*;
 
-import Entity_types.Sun;
-import RenderHooks.PostProcessingRenderHook;
+
 
 /**
  * Created by lawless on 12/10/2015.
  */
 public class PostProcessHandler {
 
-    public NPOTTexture glowTexture;
-    //public NPOTTexture glowTextureLowP;
-    public NPOTTexture glowTextureMidP;
-    public NPOTTexture godRayTexture;
-
-
+    public NPOTTexture processingTexture;
     public NPOTTexture mainTexture;
-
-    //public Texture textureles;
 
 
     World world;
@@ -39,19 +31,27 @@ public class PostProcessHandler {
 
     GLSLShader gameboy_shader  = null;
 
-    public SimpleVector sunScreenPos = new SimpleVector(0,0,0);
-    public int doLightScattering =0;
-
 
     int divRatio;
 
+
+
+    public void loadShaders(Resources res)
+    {
+
+        renderShader = new GLSLShader(Loader.loadTextFile(res.openRawResource(R.raw.mainvert)),
+        Loader.loadTextFile(res.openRawResource(R.raw.firsttestFrag)));
+
+
+
+    }
 
 
 
     public PostProcessHandler(World world, Resources res, FrameBuffer fb) {
 
 
-       textureles= new Texture(res.openRawResource(R.raw.textureless));
+
 
         this.theRenderspot= Primitives.getPlane(4,10);
 
@@ -63,38 +63,15 @@ public class PostProcessHandler {
         cam.setPosition(-10, 0, 0);
         cam.lookAt(new SimpleVector(0, 0, 0));
 
-        renderShader = new GLSLShader(Loader.loadTextFile(res.openRawResource(R.raw.postprocess_vert)),
-               Loader.loadTextFile(res.openRawResource(R.raw.postprocess_frag)));
-
-        gameboy_shader  = new GLSLShader(Loader.loadTextFile(res.openRawResource(R.raw.gameboy_vert)),
-                Loader.loadTextFile(res.openRawResource(R.raw.gameboy_frag)));
-         //fb.setBlittingShader(gameboy_shader);
-
-        glowTexture = new NPOTTexture(fb.getWidth()/2 , fb.getHeight()/2, RGBColor.GREEN);
-        glowTexture.setFiltering(true);
-        glowTexture.setMipmap(false);
-        glowTexture.setTextureCompression(true);//turning on texture compression eliminates the artifacts, no idea why lol
-        tm.addTexture("glowscene", glowTexture);
+      loadShaders(res);
 
 
+        processingTexture = new NPOTTexture(fb.getWidth() , fb.getHeight(), RGBColor.GREEN);
+        processingTexture.setFiltering(true);
+        processingTexture.setMipmap(false);
+        processingTexture.setTextureCompression(true);//turning on texture compression eliminates the artifacts, no idea why lol
+        tm.addTexture("processingTexture", processingTexture);
 
-
-        glowTextureMidP = new NPOTTexture(fb.getWidth()/4 , fb.getHeight()/4, RGBColor.GREEN);
-        glowTextureMidP.setFiltering(true);
-        glowTextureMidP.setMipmap(false);
-        glowTextureMidP.setTextureCompression(true);
-        tm.addTexture("glowscenemidp", glowTextureMidP);
-
-
-
-
-
-
-        godRayTexture = new NPOTTexture(fb.getWidth()/2 , fb.getHeight()/2, RGBColor.GREEN);
-        godRayTexture.setFiltering(true);
-        godRayTexture.setMipmap(false);
-        godRayTexture.setTextureCompression(true);
-        tm.addTexture("godrays", godRayTexture);
 
 
 
@@ -109,12 +86,9 @@ public class PostProcessHandler {
 
 
 
-        screens_ti = new TextureInfo(TextureManager.getInstance().getTextureID("glowscene"));
-        screens_ti.add(TextureManager.getInstance().getTextureID("glowscenemidp"), TextureInfo.MODE_ADD);
-        //screens_ti.add(TextureManager.getInstance().getTextureID("glowscenelowp"), TextureInfo.MODE_ADD);
-        screens_ti.add(TextureManager.getInstance().getTextureID("godrays"), TextureInfo.MODE_ADD);
-        theRenderspot.setTexture(screens_ti);
-
+        screens_ti = new TextureInfo(TextureManager.getInstance().getTextureID("processingTexture"));
+       // screens_ti.add(TextureManager.getInstance().getTextureID("glowscenemidp"), TextureInfo.MODE_ADD);
+       // theRenderspot.setTexture(screens_ti);
 
       ///  theRenderspot.setTransparency(3);
         theRenderspot.setCulling(false);
@@ -132,72 +106,6 @@ public class PostProcessHandler {
     }
 
 
-    public void OnSurfaceChange( FrameBuffer fb) {
-
-
-
-
-
-
-
-
-        glowTexture = new NPOTTexture(fb.getWidth()/2 , fb.getHeight()/2, RGBColor.GREEN);
-        glowTexture.setFiltering(true);
-        glowTexture.setMipmap(false);
-        glowTexture.setTextureCompression(true);//turning on texture compression eliminates the artifacts, no idea why lol
-        tm.addTexture("glowscene", glowTexture);
-
-
-
-
-        glowTextureMidP = new NPOTTexture(fb.getWidth()/4 , fb.getHeight()/4, RGBColor.GREEN);
-        glowTextureMidP.setFiltering(true);
-        glowTextureMidP.setMipmap(false);
-        glowTextureMidP.setTextureCompression(true);
-        tm.addTexture("glowscenemidp", glowTextureMidP);
-
-
-
-
-
-        godRayTexture = new NPOTTexture(fb.getWidth()/2 , fb.getHeight()/2, RGBColor.GREEN);
-        godRayTexture.setFiltering(true);
-        godRayTexture.setMipmap(false);
-        godRayTexture.setTextureCompression(true);
-        tm.addTexture("godrays", godRayTexture);
-
-
-
-
-
-        mainTexture = new NPOTTexture(fb.getWidth(),fb.getHeight(), RGBColor.BLUE);
-        mainTexture.setFiltering(true);
-        mainTexture.setMipmap(false);
-        mainTexture.setTextureCompression(true);
-        tm.addTexture("mainprocess", mainTexture);
-
-
-
-
-
-        screens_ti = new TextureInfo(TextureManager.getInstance().getTextureID("glowscene"));
-        screens_ti.add(TextureManager.getInstance().getTextureID("glowscenemidp"), TextureInfo.MODE_ADD);
-       // screens_ti.add(TextureManager.getInstance().getTextureID("glowscenelowp"), TextureInfo.MODE_ADD);
-        screens_ti.add(TextureManager.getInstance().getTextureID("godrays"), TextureInfo.MODE_ADD);
-        theRenderspot.setTexture(screens_ti);
-
-
-        theRenderspot.setCulling(false);
-
-        renderHook = new PostProcessingRenderHook(theRenderspot, renderShader,this);
-        renderHook.setCurrentShader(renderShader);
-
-        theRenderspot.setOrigin(new SimpleVector(0.01, 0, 0));
-        theRenderspot.setShader(renderShader);
-        theRenderspot.setRenderHook(renderHook);
-        postProcessWorld.addObject(theRenderspot);
-    }
-
 
 
 
@@ -205,48 +113,26 @@ public class PostProcessHandler {
 
 
 
-
-
-
-        RenderMode = 1;//1
-        fb.setRenderTarget(glowTexture);
-        fb.clear();
-    //    fb.clear(Color.BLACK);
-        world.renderScene(fb);
-        world.draw(fb);
-        fb.display();
-
-        fb.setRenderTarget(glowTextureMidP);
+        fb.setRenderTarget(processingTexture);
         fb.clear();
         world.renderScene(fb);
         world.draw(fb);
         fb.display();
-
-
 
         //RENDERS A world with only the glow buffer.
-        fb.setRenderTarget(mainTexture);
+        fb.setRenderTarget(processingTexture);
         fb.clear(Color.BLACK);
         postProcessWorld.renderScene(fb);//WAS POST PROCESS
         postProcessWorld.draw(fb);
         fb.display();
         fb.removeRenderTarget();
 
-        RenderMode =0;
-
 
         fb.clear();
         world.renderScene(fb);
         world.draw(fb);
         fb.display();
-
         doBlit(fb);
-
-
-        //RENDERS UI
-       // Main.allGameObjects.INSTANCE.menumanager.uiRender(fb);
-        //Main.allGameObjects.INSTANCE.menumanager.uiDraw(fb);
-
     }
 
 
@@ -262,28 +148,6 @@ public class PostProcessHandler {
 
           ///
     }
-
-
-    public void retroblit(FrameBuffer fb) {
-
-         fb.setBlittingShader(gameboy_shader);
-        fb.blit(mainTexture, 0, 0, 0, fb.getHeight(),
-                fb.getWidth(), fb.getHeight(), fb.getWidth(), -fb.getHeight(), 100, true, null);
-
-       fb.blit(textureles, 0, 0, 0, 0,
-                0, 0, 0, 0,0
-                , true, null);
-
-        fb.blit(textureles, 0, 0, 0, 0,
-                0, 0, 0, 0,0
-                , true, null);
-
-        fb.blit(textureles, 0, 0, 0, 0,
-                0, 0, 0, 0,0
-                , true, null);
-           fb.setBlittingShader(null);
-    }
-
 
 
 

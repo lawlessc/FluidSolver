@@ -26,12 +26,12 @@ public class PostProcessingRenderHook implements IRenderHook {
 
 
 
-        shader.setUniform("doLightScattering", handler.doLightScattering);
-        shader.setUniform("lightPositionOnScreen", handler.sunScreenPos);
-        shader.setUniform("exposure", 0.2f);//0.0034
-        shader.setUniform("decay", 0.96815f);// 0.96815f);
-        shader.setUniform("density",0.926f);//0.84
-        shader.setUniform("weight", 0.58767f);
+//        shader.setUniform("doLightScattering", handler.doLightScattering);
+//        shader.setUniform("lightPositionOnScreen", handler.sunScreenPos);
+//        shader.setUniform("exposure", 0.2f);//0.0034
+//        shader.setUniform("decay", 0.96815f);// 0.96815f);
+//        shader.setUniform("density",0.926f);//0.84
+//        shader.setUniform("weight", 0.58767f);
     }
 
     @Override
