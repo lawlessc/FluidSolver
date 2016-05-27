@@ -13,7 +13,7 @@ import com.threed.jpct.*;
 public class PostProcessHandler {
 
     public NPOTTexture processingTexture;
-    public NPOTTexture mainTexture;
+   // public NPOTTexture mainTexture;
 
 
     World world;
@@ -25,6 +25,8 @@ public class PostProcessHandler {
     Object3D theRenderspot = null;
 
     GLSLShader renderShader = null;
+    GLSLShader loopingshader = null;
+
     PostProcessingRenderHook renderHook = null;
     TextureManager tm = TextureManager.getInstance();
     TextureInfo screens_ti;
@@ -40,7 +42,10 @@ public class PostProcessHandler {
     {
 
         renderShader = new GLSLShader(Loader.loadTextFile(res.openRawResource(R.raw.mainvert)),
-        Loader.loadTextFile(res.openRawResource(R.raw.firsttestFrag)));
+        Loader.loadTextFile(res.openRawResource(R.raw.rendering_frag)));
+
+        loopingshader = new GLSLShader(Loader.loadTextFile(res.openRawResource(R.raw.mainvert)),
+                Loader.loadTextFile(res.openRawResource(R.raw.tapadd_frag)));
 
 
 
@@ -76,11 +81,11 @@ public class PostProcessHandler {
 
 
 
-        mainTexture = new NPOTTexture(fb.getWidth(),fb.getHeight(), RGBColor.BLUE);
-        mainTexture.setFiltering(true);
-        mainTexture.setMipmap(false);
-        mainTexture.setTextureCompression(true);
-        tm.addTexture("mainprocess", mainTexture);
+//        mainTexture = new NPOTTexture(fb.getWidth(),fb.getHeight(), RGBColor.BLUE);
+//        mainTexture.setFiltering(true);
+//        mainTexture.setMipmap(false);
+//        mainTexture.setTextureCompression(true);
+//        tm.addTexture("mainprocess", mainTexture);
 
 
 
@@ -112,27 +117,30 @@ public class PostProcessHandler {
     public void doPostProcess(FrameBuffer fb) {
 
 
-
-        fb.setRenderTarget(processingTexture);
-        fb.clear();
-        world.renderScene(fb);
-        world.draw(fb);
-        fb.display();
-
         //RENDERS A world with only the glow buffer.
         fb.setRenderTarget(processingTexture);
         fb.clear(Color.BLACK);
         postProcessWorld.renderScene(fb);//WAS POST PROCESS
         postProcessWorld.draw(fb);
         fb.display();
+
+
+
         fb.removeRenderTarget();
 
 
-        fb.clear();
-        world.renderScene(fb);
-        world.draw(fb);
+        fb.clear(Color.BLACK);
+        postProcessWorld.renderScene(fb);//WAS POST PROCESS
+        postProcessWorld.draw(fb);
         fb.display();
-        doBlit(fb);
+
+//System.out.println("ARE WE THERE YET?");
+//
+//        fb.clear();
+//        world.renderScene(fb);
+//        world.draw(fb);
+//        fb.display();
+//        doBlit(fb);
     }
 
 
@@ -142,11 +150,10 @@ public class PostProcessHandler {
     public void doBlit(FrameBuffer fb)
     {
 
+//
+//       fb.blit(mainTexture, 0, 0, 0, fb.getHeight(),
+//               mainTexture.getWidth(), mainTexture.getHeight(), fb.getWidth(), -fb.getHeight(),100, true, null);
 
-       fb.blit(mainTexture, 0, 0, 0, fb.getHeight(),
-               mainTexture.getWidth(), mainTexture.getHeight(), fb.getWidth(), -fb.getHeight(),100, true, null);
-
-          ///
     }
 
 

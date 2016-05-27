@@ -254,6 +254,7 @@ public class Main extends Activity implements OnScaleGestureListener /*,Observer
 
 				Resources res = getResources();
 				//allGameObjects.INSTANCE.gameeventmanager.mainSetup(res,w,h,fb);
+				allGameObjects.INSTANCE.processHandler = new PostProcessHandler(allGameObjects.INSTANCE.world,res,fb);
 
 			   
 			   current = System.currentTimeMillis();
@@ -265,10 +266,10 @@ public class Main extends Activity implements OnScaleGestureListener /*,Observer
 
 
 				MemoryHelper.compact();
-				Main.allGameObjects.INSTANCE.world.compileAllObjects();
+//				Main.allGameObjects.INSTANCE.world.compileAllObjects();
 
 			}
-		//	allGameObjects.INSTANCE.menumanager.setCornerPositions(fb,w,h);
+
 		}
 
 
@@ -309,7 +310,7 @@ public class Main extends Activity implements OnScaleGestureListener /*,Observer
 			 current = System.currentTimeMillis();
 			}
 
-
+			allGameObjects.INSTANCE.processHandler.doPostProcess(fb);
 
 		//	blitNumber(lfps, 5, 5);
 			
