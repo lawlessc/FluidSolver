@@ -17,6 +17,26 @@ public class PostProcessHandler {
 
 
     World world;
+
+    World AddingWorld;
+    Camera cama = null;
+
+    World AdvectingWorld;
+    Camera camb = null;
+
+    World BoundaryWorld;
+    Camera camc = null;
+
+    World divergenceWorld;
+    Camera camd = null;
+
+    World gradientWorld;
+    Camera came = null;
+
+    World jacobiWorld;
+    Camera camf = null;
+
+
     World postProcessWorld;
     //where our texture /object3d will exist to render a fullscreen quad;
     Camera cam = null;
@@ -26,6 +46,33 @@ public class PostProcessHandler {
 
     GLSLShader renderShader = null;
     GLSLShader loopingshader = null;
+
+
+    GLSLShader addingShader = null;
+    Object3D addingObj = null;
+
+    GLSLShader advectingShader = null;
+    Object3D  advectingObj = null;
+
+    GLSLShader boundaryShader = null;
+    Object3D  aboundaryObj = null;
+
+    GLSLShader divergenceShader = null;
+    Object3D  divergenceObj = null;
+
+    GLSLShader gradientShader = null;
+    Object3D gradientObj = null;
+
+    GLSLShader jacobiShader = null;
+    Object3D  jacobiObj = null;
+
+   // GLSLShader splatShader = null;
+   // GLSLShader gaussianSplatShader = null;
+   // GLSLShader vorticityShader = null;
+   // GLSLShader vorticityForceShader = null;
+
+
+
 
     PostProcessingRenderHook renderHook = null;
     TextureManager tm = TextureManager.getInstance();
@@ -38,6 +85,45 @@ public class PostProcessHandler {
 
 
 
+    public void setUpCameras()
+    {
+
+
+        AddingWorld = new World();
+        AddingWorld.getCamera();
+        cama.setPosition(-10, 0, 0);
+        cama.lookAt(new SimpleVector(0, 0, 0));
+
+
+        AdvectingWorld = new World();
+        AdvectingWorld.getCamera();
+        camb.setPosition(-10, 0, 0);
+        camb.lookAt(new SimpleVector(0, 0, 0));
+
+
+        BoundaryWorld = new World();
+        BoundaryWorld.getCamera();
+        camc.setPosition(-10, 0, 0);
+        camc.lookAt(new SimpleVector(0, 0, 0));
+
+
+        divergenceWorld = new World();
+        divergenceWorld.getCamera();
+        camd.setPosition(-10, 0, 0);
+        camd.lookAt(new SimpleVector(0, 0, 0));
+
+        gradientWorld = new World();
+        gradientWorld.getCamera();
+        came.setPosition(-10, 0, 0);
+        came.lookAt(new SimpleVector(0, 0, 0));
+
+        postProcessWorld = new World();
+        postProcessWorld.getCamera();
+        camf.setPosition(-10, 0, 0);
+        camf.lookAt(new SimpleVector(0, 0, 0));
+
+    }
+
     public void loadShaders(Resources res)
     {
 
@@ -46,6 +132,41 @@ public class PostProcessHandler {
 
         loopingshader = new GLSLShader(Loader.loadTextFile(res.openRawResource(R.raw.mainvert)),
                 Loader.loadTextFile(res.openRawResource(R.raw.tapadd_frag)));
+
+
+
+
+         addingShader = new GLSLShader(Loader.loadTextFile(res.openRawResource(R.raw.mainvert)),
+                 Loader.loadTextFile(res.openRawResource(R.raw.tapadd_frag)));
+
+
+
+        advectingShader = new GLSLShader(Loader.loadTextFile(res.openRawResource(R.raw.mainvert)),
+                Loader.loadTextFile(res.openRawResource(R.raw.tapadd_frag)));
+
+
+
+        boundaryShader = new GLSLShader(Loader.loadTextFile(res.openRawResource(R.raw.mainvert)),
+                Loader.loadTextFile(res.openRawResource(R.raw.tapadd_frag)));
+
+
+
+        divergenceShader = new GLSLShader(Loader.loadTextFile(res.openRawResource(R.raw.mainvert)),
+                Loader.loadTextFile(res.openRawResource(R.raw.tapadd_frag)));
+
+
+
+        gradientShader = new GLSLShader(Loader.loadTextFile(res.openRawResource(R.raw.mainvert)),
+                Loader.loadTextFile(res.openRawResource(R.raw.tapadd_frag)));
+
+
+
+        jacobiShader = new GLSLShader(Loader.loadTextFile(res.openRawResource(R.raw.mainvert)),
+                Loader.loadTextFile(res.openRawResource(R.raw.tapadd_frag)));
+
+
+
+
 
 
 
