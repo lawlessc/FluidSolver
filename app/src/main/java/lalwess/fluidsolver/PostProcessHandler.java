@@ -90,6 +90,10 @@ public class PostProcessHandler {
     GLSLShader gameboy_shader  = null;
 
 
+    Boolean textureCompression= false;
+    Boolean textureFiltering= true;
+    Boolean textureMipMap= false;
+
     int divRatio;
 
 
@@ -105,8 +109,9 @@ public class PostProcessHandler {
 
 
       setUpCameras();
-      setupTextures(fb);
-    loadShaders(res);
+      setupTextures(fb.getWidth(),fb.getHeight());
+      loadShaders(res);
+      setupObjects();
 
 
         this.theRenderspot= Primitives.getPlane(4,10);
@@ -209,43 +214,45 @@ public class PostProcessHandler {
 
 
 
-    public void setupTextures(FrameBuffer fb)
+    public void setupTextures(int w, int h)
     {
 
-        velocity = new NPOTTexture(fb.getWidth() , fb.getHeight(), RGBColor.GREEN);
-        velocity.setFiltering(true);
-        velocity.setMipmap(false);
-        velocity.setTextureCompression(true);//turning on texture compression eliminates the artifacts, no idea why lol
+
+
+        velocity = new NPOTTexture(w , h, RGBColor.GREEN);
+        velocity.setFiltering(textureFiltering);
+        velocity.setMipmap(textureMipMap);
+        velocity.setTextureCompression(textureCompression);//turning on texture compression eliminates the artifacts, no idea why lol
         tm.addTexture("velocityTexture", velocity);
 
-        density = new NPOTTexture(fb.getWidth() , fb.getHeight(), RGBColor.GREEN);
-        density.setFiltering(true);
-        density.setMipmap(false);
-        density.setTextureCompression(true);//turning on texture compression eliminates the artifacts, no idea why lol
+        density = new NPOTTexture(w , h, RGBColor.GREEN);
+        density.setFiltering(textureFiltering);
+        density.setMipmap(textureMipMap);
+        density.setTextureCompression(textureCompression);//turning on texture compression eliminates the artifacts, no idea why lol
         tm.addTexture("densityTexture", density);
 
-        pressure = new NPOTTexture(fb.getWidth() , fb.getHeight(), RGBColor.GREEN);
-        pressure.setFiltering(true);
-        pressure.setMipmap(false);
-        pressure.setTextureCompression(true);//turning on texture compression eliminates the artifacts, no idea why lol
+        pressure = new NPOTTexture(w , h, RGBColor.GREEN);
+        pressure.setFiltering(textureFiltering);
+        pressure.setMipmap(textureMipMap);
+        pressure.setTextureCompression(textureCompression);//turning on texture compression eliminates the artifacts, no idea why lol
         tm.addTexture("pressureTexture", pressure);
 
-        diffusion = new NPOTTexture(fb.getWidth() , fb.getHeight(), RGBColor.GREEN);
-        diffusion.setFiltering(true);
-        diffusion.setMipmap(false);
-        diffusion.setTextureCompression(true);//turning on texture compression eliminates the artifacts, no idea why lol
+        diffusion = new NPOTTexture(w, h, RGBColor.GREEN);
+        diffusion.setFiltering(textureFiltering);
+        diffusion.setMipmap(textureMipMap);
+        diffusion.setTextureCompression(textureCompression);//turning on texture compression eliminates the artifacts, no idea why lol
         tm.addTexture("diffusionTexture", diffusion);
 
-        divergence = new NPOTTexture(fb.getWidth() , fb.getHeight(), RGBColor.GREEN);
-        divergence.setFiltering(true);
-        divergence.setMipmap(false);
-        divergence.setTextureCompression(true);//turning on texture compression eliminates the artifacts, no idea why lol
+        divergence = new NPOTTexture(w , h, RGBColor.GREEN);
+        divergence.setFiltering(textureFiltering);
+        divergence.setMipmap(textureMipMap);
+        divergence.setTextureCompression(textureCompression);//turning on texture compression eliminates the artifacts, no idea why lol
         tm.addTexture("divergenceTexture", divergence);
 
-        vorticity = new NPOTTexture(fb.getWidth() , fb.getHeight(), RGBColor.GREEN);
-        vorticity.setFiltering(true);
-        vorticity.setMipmap(false);
-        vorticity.setTextureCompression(true);//turning on texture compression eliminates the artifacts, no idea why lol
+        vorticity = new NPOTTexture(w , h, RGBColor.GREEN);
+        vorticity.setFiltering(textureFiltering);
+        vorticity.setMipmap(textureMipMap);
+        vorticity.setTextureCompression(textureCompression);//turning on texture compression eliminates the artifacts, no idea why lol
         tm.addTexture("vorticityTexture", vorticity);
     }
 
@@ -342,6 +349,17 @@ public class PostProcessHandler {
 
 
 
+    }
+
+
+    public void setupObjects()
+    {
+       addingObj =  Primitives.getPlane(4,10);
+       advectingObj =  Primitives.getPlane(4,10);
+       aboundaryObj = Primitives.getPlane(4,10);
+       divergenceObj =  Primitives.getPlane(4,10);
+       gradientObj =  Primitives.getPlane(4,10);
+       jacobiObj =  Primitives.getPlane(4,10);
     }
 
 
