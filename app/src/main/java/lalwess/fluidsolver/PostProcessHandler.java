@@ -14,7 +14,9 @@ public class PostProcessHandler {
 
     public NPOTTexture processingTexture;
 
-    public NPOTTexture velocity;
+
+
+    public NPOTTexture velocity;//VECLOCITY IF FOR ADVECTING
     public NPOTTexture density;
     public NPOTTexture pressure;
     public NPOTTexture diffusion;
@@ -71,6 +73,15 @@ public class PostProcessHandler {
    // GLSLShader gaussianSplatShader = null;
    // GLSLShader vorticityShader = null;
    // GLSLShader vorticityForceShader = null;
+
+
+
+
+
+
+
+
+
 
 
 
@@ -219,6 +230,10 @@ public class PostProcessHandler {
 
 
 
+
+
+
+
         velocity = new NPOTTexture(w , h, RGBColor.GREEN);
         velocity.setFiltering(textureFiltering);
         velocity.setMipmap(textureMipMap);
@@ -354,7 +369,37 @@ public class PostProcessHandler {
 
     public void setupObjects()
     {
-       addingObj =  Primitives.getPlane(4,10);
+
+         adding_ti=new TextureInfo(TextureManager.getInstance().getTextureID("processingTexture"));
+        // screens_ti.add(TextureManager.getInstance().getTextureID("glowscenemidp"), TextureInfo.MODE_ADD);
+        // theRenderspot.setTexture(screens_ti);
+
+
+        new TextureInfo(TextureManager.getInstance().getTextureID("processingTexture"));
+        // screens_ti.add(TextureManager.getInstance().getTextureID("glowscenemidp"), TextureInfo.MODE_ADD);
+        // theRenderspot.setTexture(screens_ti);
+
+         advecting_ti   =new TextureInfo(TextureManager.getInstance().getTextureID("processingTexture"));
+        // screens_ti.add(TextureManager.getInstance().getTextureID("glowscenemidp"), TextureInfo.MODE_ADD);
+        // theRenderspot.setTexture(screens_ti);
+         boundary_ti=new TextureInfo(TextureManager.getInstance().getTextureID("processingTexture"));
+        // screens_ti.add(TextureManager.getInstance().getTextureID("glowscenemidp"), TextureInfo.MODE_ADD);
+        // theRenderspot.setTexture(screens_ti);
+         divergence_ti=new TextureInfo(TextureManager.getInstance().getTextureID("processingTexture"));
+        // screens_ti.add(TextureManager.getInstance().getTextureID("glowscenemidp"), TextureInfo.MODE_ADD);
+        // theRenderspot.setTexture(screens_ti);
+         gradient_ti=new TextureInfo(TextureManager.getInstance().getTextureID("processingTexture"));
+        // screens_ti.add(TextureManager.getInstance().getTextureID("glowscenemidp"), TextureInfo.MODE_ADD);
+        // theRenderspot.setTexture(screens_ti);
+         jacobi_ti=new TextureInfo(TextureManager.getInstance().getTextureID("processingTexture"));
+        // screens_ti.add(TextureManager.getInstance().getTextureID("glowscenemidp"), TextureInfo.MODE_ADD);
+        // theRenderspot.setTexture(screens_ti);
+
+
+
+
+
+        addingObj =  Primitives.getPlane(4,10);
        advectingObj =  Primitives.getPlane(4,10);
        aboundaryObj = Primitives.getPlane(4,10);
        divergenceObj =  Primitives.getPlane(4,10);
