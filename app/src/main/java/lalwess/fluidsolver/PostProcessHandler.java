@@ -24,6 +24,9 @@ public class PostProcessHandler {
     public NPOTTexture vorticity;
 
 
+    public NPOTTexture outPutTexture = null; //if not a null we output texture to this.
+
+
     World world;
 
     World AddingWorld;
@@ -108,15 +111,27 @@ public class PostProcessHandler {
     int divRatio;
 
 
+    public float SCALE =1.0f;
+    public float TIMESTEP  = 0.125f;
+    public float DISSIPATION = 0.99f;
+    public float VELOCITY_DISSIPATION =0.99f;
+    public int NUM_JACOBI_ITERATIONS =80;
+    public float EPSILON =2.4414e-4f;
+    public float CURL = 0.3f;
+    public float VISCOSITY =0.001f;
 
 
 
+
+
+    public void setOutPutTexture(NPOTTexture outPutTexture)
+    {
+
+        this.outPutTexture = outPutTexture;
+    }
 
 
     public PostProcessHandler(World world, Resources res, FrameBuffer fb) {
-
-
-
 
 
       setUpCameras();
@@ -136,8 +151,6 @@ public class PostProcessHandler {
         cam.lookAt(new SimpleVector(0, 0, 0));
 
 
-
-
         processingTexture = new NPOTTexture(fb.getWidth() , fb.getHeight(), RGBColor.GREEN);
         processingTexture.setFiltering(true);
         processingTexture.setMipmap(false);
@@ -148,21 +161,11 @@ public class PostProcessHandler {
 
 
 
-//        mainTexture = new NPOTTexture(fb.getWidth(),fb.getHeight(), RGBColor.BLUE);
-//        mainTexture.setFiltering(true);
-//        mainTexture.setMipmap(false);
-//        mainTexture.setTextureCompression(true);
-//        tm.addTexture("mainprocess", mainTexture);
-
-
-
-
-
         screens_ti = new TextureInfo(TextureManager.getInstance().getTextureID("processingTexture"));
        // screens_ti.add(TextureManager.getInstance().getTextureID("glowscenemidp"), TextureInfo.MODE_ADD);
-       // theRenderspot.setTexture(screens_ti);
 
-      ///  theRenderspot.setTransparency(3);
+      ///  theRenderspot.setTransparency(3);     // theRenderspot.setTexture(screens_ti);
+
         theRenderspot.setCulling(false);
 
 
@@ -176,6 +179,7 @@ public class PostProcessHandler {
 
 
     }
+
 
 
 
@@ -196,11 +200,22 @@ public class PostProcessHandler {
         fb.removeRenderTarget();
 
 
-        fb.clear(Color.BLACK);
-        postProcessWorld.renderScene(fb);//WAS POST PROCESS
-        postProcessWorld.draw(fb);
-        fb.display();
 
+        if(outPutTexture == null) {
+            fb.clear(Color.BLACK);
+            postProcessWorld.renderScene(fb);//WAS POST PROCESS
+            postProcessWorld.draw(fb);
+            fb.display();
+
+        }
+        else
+        {
+            fb.setRenderTarget(outPutTexture);
+            fb.clear(Color.BLACK);
+            postProcessWorld.renderScene(fb);//WAS POST PROCESS
+            postProcessWorld.draw(fb);
+            fb.display();
+        }
 //System.out.println("ARE WE THERE YET?");
 //
 //        fb.clear();
