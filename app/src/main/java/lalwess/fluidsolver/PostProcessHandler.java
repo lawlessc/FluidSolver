@@ -18,10 +18,10 @@ public class PostProcessHandler {
 
     public NPOTTexture velocity;//VECLOCITY IF FOR ADVECTING
     public NPOTTexture density;
-    public NPOTTexture pressure;
-    public NPOTTexture diffusion;
-    public NPOTTexture divergence;
-    public NPOTTexture vorticity;
+//    public NPOTTexture pressure;
+//    public NPOTTexture diffusion;
+//    public NPOTTexture divergence;
+//    public NPOTTexture vorticity;
 
 
     public NPOTTexture outPutTexture = null; //if not a null we output texture to this.
@@ -29,7 +29,7 @@ public class PostProcessHandler {
 
     World world;
 
-    World AddingWorld;
+    World impulseWorld;
     Camera cama = null;
     World AdvectingWorld;
     Camera camb = null;
@@ -54,8 +54,12 @@ public class PostProcessHandler {
     GLSLShader loopingshader = null;
 
 
-    GLSLShader addingShader = null;
-    Object3D addingObj = null;
+
+    GLSLShader fillingShader = null;
+    Object3D fillingObj = null;
+
+    GLSLShader impulseShader = null;
+    Object3D impulseObj = null;
 
     GLSLShader advectingShader = null;
     Object3D  advectingObj = null;
@@ -71,6 +75,10 @@ public class PostProcessHandler {
 
     GLSLShader jacobiShader = null;
     Object3D  jacobiObj = null;
+
+    GLSLShader subtractingShader = null;
+    Object3D subtractingObj = null;
+
 
    // GLSLShader splatShader = null;
    // GLSLShader gaussianSplatShader = null;
@@ -108,18 +116,21 @@ public class PostProcessHandler {
     Boolean textureFiltering= true;
     Boolean textureMipMap= false;
 
+    Boolean firstRun = true;
+
     int divRatio;
 
 
-    public float SCALE =1.0f;
-    public float TIMESTEP  = 0.125f;
-    public float DISSIPATION = 0.99f;
-    public float VELOCITY_DISSIPATION =0.99f;
-    public int NUM_JACOBI_ITERATIONS =80;
-    public float EPSILON =2.4414e-4f;
-    public float CURL = 0.3f;
-    public float VISCOSITY =0.001f;
-
+//    public float SCALE =1.0f;
+//    public float TIMESTEP  = 0.125f;
+//    public float DISSIPATION = 0.99f;
+//    public float VELOCITY_DISSIPATION =0.99f;
+//    public int NUM_JACOBI_ITERATIONS =80;
+//    public float EPSILON =2.4414e-4f;
+//    public float CURL = 0.3f;
+//    public float VISCOSITY =0.001f;
+//
+//
 
 
 
@@ -261,37 +272,15 @@ public class PostProcessHandler {
         density.setTextureCompression(textureCompression);//turning on texture compression eliminates the artifacts, no idea why lol
         tm.addTexture("densityTexture", density);
 
-        pressure = new NPOTTexture(w , h, RGBColor.GREEN);
-        pressure.setFiltering(textureFiltering);
-        pressure.setMipmap(textureMipMap);
-        pressure.setTextureCompression(textureCompression);//turning on texture compression eliminates the artifacts, no idea why lol
-        tm.addTexture("pressureTexture", pressure);
 
-        diffusion = new NPOTTexture(w, h, RGBColor.GREEN);
-        diffusion.setFiltering(textureFiltering);
-        diffusion.setMipmap(textureMipMap);
-        diffusion.setTextureCompression(textureCompression);//turning on texture compression eliminates the artifacts, no idea why lol
-        tm.addTexture("diffusionTexture", diffusion);
-
-        divergence = new NPOTTexture(w , h, RGBColor.GREEN);
-        divergence.setFiltering(textureFiltering);
-        divergence.setMipmap(textureMipMap);
-        divergence.setTextureCompression(textureCompression);//turning on texture compression eliminates the artifacts, no idea why lol
-        tm.addTexture("divergenceTexture", divergence);
-
-        vorticity = new NPOTTexture(w , h, RGBColor.GREEN);
-        vorticity.setFiltering(textureFiltering);
-        vorticity.setMipmap(textureMipMap);
-        vorticity.setTextureCompression(textureCompression);//turning on texture compression eliminates the artifacts, no idea why lol
-        tm.addTexture("vorticityTexture", vorticity);
     }
 
     public void setUpCameras()
     {
 
 
-        AddingWorld = new World();
-        cama=AddingWorld.getCamera();
+        impulseWorld = new World();
+        cama= impulseWorld.getCamera();
         cama.setPosition(-10, 0, 0);
         cama.lookAt(new SimpleVector(0, 0, 0));
 
@@ -336,6 +325,10 @@ public class PostProcessHandler {
     public void loadShaders(Resources res)
     {
 
+
+
+
+
         renderShader = new GLSLShader(Loader.loadTextFile(res.openRawResource(R.raw.mainvert)),
                 Loader.loadTextFile(res.openRawResource(R.raw.rendering_frag)));
 
@@ -344,19 +337,29 @@ public class PostProcessHandler {
 
 
 
+         subtractingShader =  new GLSLShader(Loader.loadTextFile(res.openRawResource(R.raw.mainvert)),
+                Loader.loadTextFile(res.openRawResource(R.raw.subtract_frag)));;
 
-        addingShader = new GLSLShader(Loader.loadTextFile(res.openRawResource(R.raw.mainvert)),
-                Loader.loadTextFile(res.openRawResource(R.raw.tapadd_frag)));
+
+
+         fillingShader =  new GLSLShader(Loader.loadTextFile(res.openRawResource(R.raw.mainvert)),
+                Loader.loadTextFile(res.openRawResource(R.raw.fill_frag)));;
+
+
+
+
+        impulseShader = new GLSLShader(Loader.loadTextFile(res.openRawResource(R.raw.mainvert)),
+                Loader.loadTextFile(res.openRawResource(R.raw.impulse_frag)));
 
 
 
         advectingShader = new GLSLShader(Loader.loadTextFile(res.openRawResource(R.raw.mainvert)),
-                Loader.loadTextFile(res.openRawResource(R.raw.tapadd_frag)));
+                Loader.loadTextFile(res.openRawResource(R.raw.advect_frag)));
 
 
 
         boundaryShader = new GLSLShader(Loader.loadTextFile(res.openRawResource(R.raw.mainvert)),
-                Loader.loadTextFile(res.openRawResource(R.raw.tapadd_frag)));
+                Loader.loadTextFile(res.openRawResource(R.raw.boundary)));
 
 
 
@@ -413,13 +416,16 @@ public class PostProcessHandler {
 
 
 
-
-        addingObj =  Primitives.getPlane(4,10);
+         fillingObj = Primitives.getPlane(4,10);
+        impulseObj =  Primitives.getPlane(4,10);
        advectingObj =  Primitives.getPlane(4,10);
        aboundaryObj = Primitives.getPlane(4,10);
        divergenceObj =  Primitives.getPlane(4,10);
        gradientObj =  Primitives.getPlane(4,10);
        jacobiObj =  Primitives.getPlane(4,10);
+
+         subtractingObj =  Primitives.getPlane(4,10);
+
     }
 
 

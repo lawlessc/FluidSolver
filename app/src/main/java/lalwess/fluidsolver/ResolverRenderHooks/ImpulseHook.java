@@ -6,10 +6,10 @@ import com.threed.jpct.Object3D;
 
 /**
  * Created by Chris on 29/05/2016.
+ *
+ * Basically so i can tap the screen
  */
-public class AdvectHook  implements IRenderHook {
-
-
+public class ImpulseHook implements IRenderHook {
     @Override
     public void beforeRendering(int i) {
 

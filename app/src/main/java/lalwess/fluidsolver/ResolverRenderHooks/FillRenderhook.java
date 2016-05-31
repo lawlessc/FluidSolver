@@ -5,11 +5,9 @@ import com.threed.jpct.IRenderHook;
 import com.threed.jpct.Object3D;
 
 /**
- * Created by Chris on 29/05/2016.
+ * Created by Chris on 30/05/2016.
  */
-public class AdvectHook  implements IRenderHook {
-
-
+public class FillRenderhook implements IRenderHook {
     @Override
     public void beforeRendering(int i) {
 
