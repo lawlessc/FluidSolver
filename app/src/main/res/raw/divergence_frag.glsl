@@ -1,6 +1,3 @@
--- ComputeDivergence
-
-out float FragColor;
 
 uniform sampler2D Velocity;
 uniform sampler2D Obstacles;

@@ -24,7 +24,6 @@ import com.threed.jpct.util.AAConfigChooser;
 import com.threed.jpct.util.MemoryHelper;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -48,8 +47,7 @@ public class Main extends Activity implements OnScaleGestureListener /*,Observer
         INSTANCE;
 
 
-        public World world = null;
-    	public Camera cam = null;
+;
     	//might make sense to start this at 0 anyway
     	public long runningTime=0;
 		public long runningTimeSeconds;
@@ -254,7 +252,7 @@ public class Main extends Activity implements OnScaleGestureListener /*,Observer
 
 				Resources res = getResources();
 				//allGameObjects.INSTANCE.gameeventmanager.mainSetup(res,w,h,fb);
-				allGameObjects.INSTANCE.processHandler = new PostProcessHandler(allGameObjects.INSTANCE.world,res,fb);
+				allGameObjects.INSTANCE.processHandler = new PostProcessHandler(res,fb);
 
 			   
 			   current = System.currentTimeMillis();
@@ -310,7 +308,7 @@ public class Main extends Activity implements OnScaleGestureListener /*,Observer
 			 current = System.currentTimeMillis();
 			}
 
-			allGameObjects.INSTANCE.processHandler.doPostProcess(fb);
+			allGameObjects.INSTANCE.processHandler.Process(fb);
 
 		//	blitNumber(lfps, 5, 5);
 			

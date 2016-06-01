@@ -4,14 +4,33 @@ import com.threed.jpct.GLSLShader;
 import com.threed.jpct.IRenderHook;
 import com.threed.jpct.Object3D;
 
+import lalwess.fluidsolver.PostProcessHandler;
+
 /**
  * Created by Chris on 29/05/2016.
  */
-public class AdvectHook  implements IRenderHook {
+public class AdvectionHook implements IRenderHook {
+
+
+    PostProcessHandler parent;
+    GLSLShader advection;
+
+
+    public AdvectionHook(PostProcessHandler parent , GLSLShader advection)
+    {
+        this.parent=parent;
+        this.advection =advection;
+
+
+    }
 
 
     @Override
     public void beforeRendering(int i) {
+
+      //  advection.setStaticUniform("InverseSize", dist);
+     //   advection.setStaticUniform("TimeStep", dist*dist);
+      //  advection.setStaticUniform("Dissipation", innnerRad);
 
     }
 
