@@ -55,8 +55,8 @@ public class PostProcessHandler {
     public int RenderMode = 0;  //Render Mode 0 is regular, 1 is glow, 2 is godrays
   //  Object3D theRenderspot = null;
 
-    GLSLShader renderShader = null;
-    GLSLShader loopingshader = null;
+  //  GLSLShader renderShader = null;
+  //  GLSLShader loopingshader = null;
 
 
 
@@ -123,21 +123,16 @@ public class PostProcessHandler {
 
 
 
-    public void setOutPutTexture(NPOTTexture outPutTexture)
-    {
-
-        this.outPutTexture = outPutTexture;
-    }
-
-
     public PostProcessHandler(Resources res, FrameBuffer fb) {
 
 
-      setUpCameras();
-      setupTextures(fb.getWidth(),fb.getHeight());
+      setUpCameras();//worlds
+
       loadShaders(res);
+      setupTextures(fb.getWidth(),fb.getHeight());
       setupTextureInfos();
       setupObjects();
+
 
 
      //   this.theRenderspot= Primitives.getPlane(4,10);
@@ -198,13 +193,16 @@ public class PostProcessHandler {
     {
 
         fb.setRenderTarget(velocity);
-        fb.clear(Color.BLACK);
+        fb.clear(Color.RED);
         FillWorld.renderScene(fb);//WAS POST PROCESS
         FillWorld.draw(fb);
         fb.display();
-        firstRun=false;
+
 
         FinalWorld= FillWorld;
+
+        firstRun=false;
+        System.out.println("CALLED FILL");
     }
 
 
@@ -216,18 +214,12 @@ public class PostProcessHandler {
         //RENDERS A world with only the glow buffer.
 
 
-
-
-
-
-
         if(outPutTexture == null) {
             fb.removeRenderTarget();
             fb.clear();
             FinalWorld.renderScene(fb);//WAS POST PROCESS
             FinalWorld.draw(fb);
             fb.display();
-
         }
         else
         {
@@ -246,8 +238,10 @@ public class PostProcessHandler {
 
         fillingObj = Primitives.getPlane(4,10);
         fillingObj.setOrigin(new SimpleVector(0.01, 0, 0));
-        fillingObj.setShader(fillingShader);
         fillingObj.setTexture(VELOCITY_TEXTURE_TAG);
+
+        fillingObj.setShader(fillingShader);
+        //fillingObj.setTexture(VELOCITY_TEXTURE_TAG);
         FillWorld.addObject(fillingObj);
 
 
@@ -339,8 +333,6 @@ public class PostProcessHandler {
         advectingShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.advect_frag)));
 
 
-        renderShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.rendering_frag)));
-        loopingshader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.tapadd_frag)));
         subtractingShader =  new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.subtract_frag)));;
         impulseShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.impulse_frag)));
 
@@ -353,13 +345,13 @@ public class PostProcessHandler {
     public void setupTextureInfos() {
 
 
-        fill_ti =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
-       // fill_ti.add(TextureManager.getInstance().getTextureID("glowscenemidp"), TextureInfo.MODE_ADD);
-        // theRenderspot.setTexture(screens_ti);
+       // fill_ti =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
+       // fillingObj.setTexture(fill_ti);
+
 
         advecting_ti   =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
         advecting_ti.add(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG), TextureInfo.MODE_ADD);
-        // theRenderspot.setTexture(screens_ti);
+       // advectingObj.setTexture(advecting_ti);
 
 
         adding_ti=new TextureInfo(TextureManager.getInstance().getTextureID("processingTexture"));
@@ -386,6 +378,12 @@ public class PostProcessHandler {
         // theRenderspot.setTexture(screens_ti);
 
 
+    }
+
+
+    public void setOutPutTexture(NPOTTexture outPutTexture)
+    {
+        this.outPutTexture = outPutTexture;
     }
 
 
