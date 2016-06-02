@@ -5,6 +5,7 @@ import android.graphics.Color;
 
 import com.threed.jpct.*;
 
+import lalwess.fluidsolver.ResolverRenderHooks.AdvectionHook;
 
 
 /**
@@ -60,14 +61,16 @@ public class PostProcessHandler {
 
 
 
-    GLSLShader fillingShader = null;
-    Object3D fillingObj = null;
+   // GLSLShader fillingShader = null;
+  //  Object3D fillingObj = null;
 
     GLSLShader impulseShader = null;
     Object3D impulseObj = null;
 
     GLSLShader advectingShader = null;
     Object3D  advectingObj = null;
+   AdvectionHook  advectionHook = null;
+
 
    // GLSLShader boundaryShader = null;
    // Object3D  aboundaryObj = null;
@@ -110,14 +113,14 @@ public class PostProcessHandler {
     String DENSITY_TEXTURE_TAG= "density";
 
 
-//    public float SCALE =1.0f;
-//    public float TIMESTEP  = 0.125f;
-//    public float DISSIPATION = 0.99f;
-//    public float VELOCITY_DISSIPATION =0.99f;
-//    public int NUM_JACOBI_ITERATIONS =80;
-//    public float EPSILON =2.4414e-4f;
-//    public float CURL = 0.3f;
-//    public float VISCOSITY =0.001f;
+    public float SCALE =1.0f;
+    public float TIMESTEP  = 0.125f;
+    public float DISSIPATION = 0.99f;
+    public float VELOCITY_DISSIPATION =0.99f;
+    public int NUM_JACOBI_ITERATIONS =80;
+    public float EPSILON =2.4414e-4f;
+    public float CURL = 0.3f;
+    public float VISCOSITY =0.001f;
 
 
 
@@ -132,51 +135,6 @@ public class PostProcessHandler {
       setupTextures(fb.getWidth(),fb.getHeight());
       setupTextureInfos();
       setupObjects();
-
-
-
-     //   this.theRenderspot= Primitives.getPlane(4,10);
-
-
-      //  this.world = world;
-     //   postProcessWorld = new World();
-      //  cam = postProcessWorld.getCamera();
-     //   cam.setPosition(-10, 0, 0);
-     //   cam.lookAt(new SimpleVector(0, 0, 0));
-
-//
-//        processingTexture = new NPOTTexture(fb.getWidth() , fb.getHeight(), RGBColor.GREEN);
-//        processingTexture.setFiltering(true);
-//        processingTexture.setMipmap(false);
-//        processingTexture.setTextureCompression(true);//turning on texture compression eliminates the artifacts, no idea why lol
-//        tm.addTexture("processingTexture", processingTexture);
-
-
-
-
-
-        //screens_ti = new TextureInfo(TextureManager.getInstance().getTextureID("processingTexture"));
-       // screens_ti.add(TextureManager.getInstance().getTextureID("glowscenemidp"), TextureInfo.MODE_ADD);
-
-      ///  theRenderspot.setTransparency(3);
-        //
-        //
-        //
-        //
-        //theRenderspot.setTexture(screens_ti);
-
-     //   theRenderspot.setCulling(false);
-
-
-      // renderHook = new PostProcessingRenderHook(theRenderspot, renderShader,this);
-     //  renderHook.setCurrentShader(renderShader);
-
-      //  theRenderspot.setOrigin(new SimpleVector(0.01, 0, 0));
-     //   theRenderspot.setShader(renderShader);
-     //   theRenderspot.setRenderHook(renderHook);
-     //  postProcessWorld.addObject(theRenderspot);
-
-
     }
 
 
@@ -199,19 +157,22 @@ public class PostProcessHandler {
         fb.display();
 
 
-        FinalWorld= FillWorld;
+
 
         firstRun=false;
         System.out.println("CALLED FILL");
     }
 
 
-//        fb.setRenderTarget(processingTexture);
-//        fb.clear(Color.BLACK);
-//        postProcessWorld.renderScene(fb);//WAS POST PROCESS
-//        postProcessWorld.draw(fb);
-//        fb.display();
-        //RENDERS A world with only the glow buffer.
+        FinalWorld= AdvectingWorld;
+
+
+        fb.setRenderTarget(velocity);
+        fb.clear();
+        AdvectingWorld.renderScene(fb);
+        AdvectingWorld.draw(fb);
+        fb.display();
+
 
 
         if(outPutTexture == null) {
@@ -236,17 +197,21 @@ public class PostProcessHandler {
     public void setupObjects()
     {
 
-        fillingObj = Primitives.getPlane(4,10);
-        fillingObj.setOrigin(new SimpleVector(0.01, 0, 0));
-        fillingObj.setTexture(VELOCITY_TEXTURE_TAG);
 
-        fillingObj.setShader(fillingShader);
-        //fillingObj.setTexture(VELOCITY_TEXTURE_TAG);
-        FillWorld.addObject(fillingObj);
+        advectingObj = Primitives.getPlane(4,10);
+        advectingObj.setOrigin(new SimpleVector(0.01, 0, 0));
+        advectingObj.setTexture(VELOCITY_TEXTURE_TAG);
+
+        advectionHook = new AdvectionHook(this,advectingShader);
+
+        advectingObj.setShader(advectingShader);
+        advectingObj.setRenderHook(advectionHook);
+        advectingObj.setTexture(VELOCITY_TEXTURE_TAG);
+        AdvectingWorld.addObject(advectingObj);
 
 
         impulseObj =  Primitives.getPlane(4,10);
-        advectingObj =  Primitives.getPlane(4,10);
+
         //aboundaryObj = Primitives.getPlane(4,10);
         divergenceObj =  Primitives.getPlane(4,10);
         gradientObj =  Primitives.getPlane(4,10);
@@ -328,18 +293,18 @@ public class PostProcessHandler {
     public void loadShaders(Resources res)
     {
         String vertexShader =   Loader.loadTextFile(res.openRawResource(R.raw.mainvert));
-        fillingShader =  new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.fill_frag)));
+      //  fillingShader =  new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.fill_frag)));
 
         advectingShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.advect_frag)));
 
 
-        subtractingShader =  new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.subtract_frag)));;
-        impulseShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.impulse_frag)));
+      //  subtractingShader =  new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.subtract_frag)));;
+      //  impulseShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.impulse_frag)));
 
         //boundaryShader = new GLSLShader(Loader.loadTextFile(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.boundary)));
-        divergenceShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.divergence_frag)));
+      //  divergenceShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.divergence_frag)));
         //gradientShader = new GLSLShader(Loader.loadTextFile(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.gr)));
-        jacobiShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.jacobi_frag)));
+     //   jacobiShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.jacobi_frag)));
     }
 
     public void setupTextureInfos() {
