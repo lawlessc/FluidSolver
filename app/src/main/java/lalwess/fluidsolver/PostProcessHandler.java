@@ -35,12 +35,14 @@ public class PostProcessHandler {
     Camera camb = null;
    // World BoundaryWorld;
    // Camera camc = null;
-    World divergenceWorld;
-    Camera camd = null;
+
     World gradientWorld;
     Camera came = null;
     World jacobiWorld;
     Camera camf = null;
+
+
+
 
 
 
@@ -72,11 +74,8 @@ public class PostProcessHandler {
    AdvectionHook  advectionHook = null;
 
 
-   // GLSLShader boundaryShader = null;
-   // Object3D  aboundaryObj = null;
 
-    GLSLShader divergenceShader = null;
-    Object3D  divergenceObj = null;
+
 
     GLSLShader gradientShader = null;
     Object3D gradientObj = null;
@@ -97,7 +96,7 @@ public class PostProcessHandler {
     TextureInfo adding_ti;
     TextureInfo advecting_ti;
    // TextureInfo boundary_ti;
-    TextureInfo divergence_ti;
+
     TextureInfo gradient_ti;
     TextureInfo jacobi_ti;
 
@@ -114,15 +113,29 @@ public class PostProcessHandler {
 
 
     public float SCALE =1.0f;
-    public float TIMESTEP  = 0.125f;
+    public float TIMESTEP  = 0.125f;//0.125f;
     public float DISSIPATION = 0.99f;
     public float VELOCITY_DISSIPATION =0.99f;
-    public int NUM_JACOBI_ITERATIONS =80;
+
     public float EPSILON =2.4414e-4f;
     public float CURL = 0.3f;
     public float VISCOSITY =0.001f;
 
 
+
+
+
+    World divergenceWorld;
+    Camera camd = null;
+    TextureInfo divergence_ti;
+    GLSLShader divergenceShader = null;
+    Object3D  divergenceObj = null;
+
+    World displayWorld;
+    Camera displayCam = null;
+    TextureInfo display_ti;
+    GLSLShader displayShader = null;
+    Object3D displayObj = null;
 
 
 
@@ -155,16 +168,12 @@ public class PostProcessHandler {
         FillWorld.renderScene(fb);//WAS POST PROCESS
         FillWorld.draw(fb);
         fb.display();
-
-
-
-
         firstRun=false;
         System.out.println("CALLED FILL");
     }
 
 
-        FinalWorld= AdvectingWorld;
+       // FinalWorld= AdvectingWorld;
 
 
         fb.setRenderTarget(velocity);
@@ -178,16 +187,16 @@ public class PostProcessHandler {
         if(outPutTexture == null) {
             fb.removeRenderTarget();
             fb.clear();
-            FinalWorld.renderScene(fb);//WAS POST PROCESS
-            FinalWorld.draw(fb);
+            displayWorld.renderScene(fb);//WAS POST PROCESS
+            displayWorld.draw(fb);
             fb.display();
         }
         else
         {
             fb.setRenderTarget(outPutTexture);
             fb.clear();
-            FinalWorld.renderScene(fb);//WAS POST PROCESS
-            FinalWorld.draw(fb);
+            displayWorld.renderScene(fb);//WAS POST PROCESS
+            displayWorld.draw(fb);
             fb.display();
         }
     }
@@ -197,17 +206,24 @@ public class PostProcessHandler {
     public void setupObjects()
     {
 
-
+       //does advection
         advectingObj = Primitives.getPlane(4,10);
         advectingObj.setOrigin(new SimpleVector(0.01, 0, 0));
-        advectingObj.setTexture(VELOCITY_TEXTURE_TAG);
-
         advectionHook = new AdvectionHook(this,advectingShader);
-
         advectingObj.setShader(advectingShader);
         advectingObj.setRenderHook(advectionHook);
-        advectingObj.setTexture(VELOCITY_TEXTURE_TAG);
+        advectingObj.setTexture(advecting_ti);
+
+
+        //advectingObj.setTransparency(3);
+        advectingObj.setCulling(false);
         AdvectingWorld.addObject(advectingObj);
+
+
+
+
+
+
 
 
         impulseObj =  Primitives.getPlane(4,10);
@@ -218,6 +234,16 @@ public class PostProcessHandler {
         jacobiObj =  Primitives.getPlane(4,10);
         subtractingObj =  Primitives.getPlane(4,10);
 
+
+
+
+      //Displays a texture. doesn't process
+        displayObj = Primitives.getPlane(4,10);
+        displayObj.setOrigin(new SimpleVector(0.01, 0, 0));
+        displayObj.setShader(displayShader);
+        displayObj.setTexture(VELOCITY_TEXTURE_TAG);
+        displayObj.setCulling(false);
+        displayWorld.addObject(displayObj);
     }
 
 
@@ -284,6 +310,12 @@ public class PostProcessHandler {
 
 
 
+        displayWorld = new World();
+        displayCam=displayWorld.getCamera();
+        displayCam.setPosition(-10, 0, 0);
+        displayCam.lookAt(new SimpleVector(0, 0, 0));
+
+
 
 
 
@@ -296,22 +328,19 @@ public class PostProcessHandler {
       //  fillingShader =  new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.fill_frag)));
 
         advectingShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.advect_frag)));
-
+        displayShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.rendering_frag)));
+        divergenceShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.divergence_frag)));
 
       //  subtractingShader =  new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.subtract_frag)));;
       //  impulseShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.impulse_frag)));
 
         //boundaryShader = new GLSLShader(Loader.loadTextFile(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.boundary)));
-      //  divergenceShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.divergence_frag)));
+
         //gradientShader = new GLSLShader(Loader.loadTextFile(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.gr)));
      //   jacobiShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.jacobi_frag)));
     }
 
     public void setupTextureInfos() {
-
-
-       // fill_ti =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
-       // fillingObj.setTexture(fill_ti);
 
 
         advecting_ti   =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));

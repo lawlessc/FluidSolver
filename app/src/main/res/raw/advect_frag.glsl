@@ -6,11 +6,11 @@ uniform sampler2D textureUnit1;//source texture
 
 //uniform sampler2D textureUnit2;//Obstacle Texture
 
-//uniform vec2 InverseSize;
+
 uniform highp float TimeStep;
 uniform highp float Dissipation;
 varying  lowp vec2 v_texCoord;
-
+varying lowp vec2 inversesize;
 void main()
 {
     highp vec2  fragCoord = v_texCoord;
@@ -19,8 +19,8 @@ void main()
      //   gl_FragColor = vec4(0);
     //}
                            //1.0 is inversesize
-    highp vec2 u = texture2D(textureUnit0, 1.0 * fragCoord).xy;
-    highp vec2 coord = 1.0 * (fragCoord - TimeStep * u);      //1.0 is inversesize
+    highp vec2 u = texture2D(textureUnit0, inversesize * fragCoord).xy;
+    highp vec2 coord = inversesize * (fragCoord - TimeStep * u);      //1.0 is inversesize
     gl_FragColor = Dissipation * texture2D(textureUnit1, coord);
 }
 

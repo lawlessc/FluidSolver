@@ -1,6 +1,3 @@
--- Splat
-
-out vec4 FragColor;
 
 uniform vec2 Point;
 uniform float Radius;
