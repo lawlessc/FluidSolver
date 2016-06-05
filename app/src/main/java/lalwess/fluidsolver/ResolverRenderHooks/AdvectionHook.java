@@ -28,7 +28,7 @@ public class AdvectionHook implements IRenderHook {
     @Override
     public void beforeRendering(int i) {
 
-      //advection.setStaticUniform("InverseSize", parent.SCALE);
+      advection.setStaticUniform("InverseSize", parent.InverseSize);
        advection.setStaticUniform("TimeStep", parent.TIMESTEP);
        advection.setStaticUniform("Dissipation",parent.VELOCITY_DISSIPATION);
 

@@ -6,6 +6,7 @@ import android.graphics.Color;
 import com.threed.jpct.*;
 
 import lalwess.fluidsolver.ResolverRenderHooks.AdvectionHook;
+import lalwess.fluidsolver.ResolverRenderHooks.DivergenceHook;
 
 
 /**
@@ -42,37 +43,21 @@ public class PostProcessHandler {
     Camera camf = null;
 
 
-
-
-
-
-
-    World FinalWorld = null;//depending on visualisation mode we set this as the final world.
-
-
-
     //World postProcessWorld;
     //where our texture /object3d will exist to render a fullscreen quad;
     Camera cam = null;
 
     public int RenderMode = 0;  //Render Mode 0 is regular, 1 is glow, 2 is godrays
-  //  Object3D theRenderspot = null;
-
-  //  GLSLShader renderShader = null;
-  //  GLSLShader loopingshader = null;
-
-
-
-   // GLSLShader fillingShader = null;
-  //  Object3D fillingObj = null;
 
     GLSLShader impulseShader = null;
     Object3D impulseObj = null;
 
     GLSLShader advectingShader = null;
     Object3D  advectingObj = null;
-   AdvectionHook  advectionHook = null;
 
+
+   AdvectionHook  advectionHook = null;
+   DivergenceHook divergenceHook=null;
 
 
 
@@ -120,6 +105,11 @@ public class PostProcessHandler {
     public float EPSILON =2.4414e-4f;
     public float CURL = 0.3f;
     public float VISCOSITY =0.001f;
+    public float CELLSIZE = 1.25f;
+    public float HALFCELL = 0.5f / CELLSIZE;
+    public SimpleVector InverseSize = null;
+
+    //public float HalfInverseCellSize;
 
 
 
@@ -146,6 +136,10 @@ public class PostProcessHandler {
 
       loadShaders(res);
       setupTextures(fb.getWidth(),fb.getHeight());
+        InverseSize = new SimpleVector(1.0f/ fb.getWidth() ,1.0f/ fb.getHeight() ,0);
+
+
+
       setupTextureInfos();
       setupObjects();
     }
@@ -215,6 +209,20 @@ public class PostProcessHandler {
         advectingObj.setTexture(advecting_ti);
 
 
+
+
+        divergenceObj = Primitives.getPlane(4,10);
+        divergenceObj.setOrigin(new SimpleVector(0.01, 0, 0));
+        divergenceHook = new DivergenceHook(this,advectingShader);
+        divergenceObj.setShader(divergenceShader);
+        divergenceObj.setRenderHook(divergenceHook);
+        divergenceObj.setTexture(advecting_ti);
+
+
+
+
+
+
         //advectingObj.setTransparency(3);
         advectingObj.setCulling(false);
         AdvectingWorld.addObject(advectingObj);
@@ -229,7 +237,7 @@ public class PostProcessHandler {
         impulseObj =  Primitives.getPlane(4,10);
 
         //aboundaryObj = Primitives.getPlane(4,10);
-        divergenceObj =  Primitives.getPlane(4,10);
+
         gradientObj =  Primitives.getPlane(4,10);
         jacobiObj =  Primitives.getPlane(4,10);
         subtractingObj =  Primitives.getPlane(4,10);
@@ -377,7 +385,9 @@ public class PostProcessHandler {
 
     public void setOutPutTexture(NPOTTexture outPutTexture)
     {
+
         this.outPutTexture = outPutTexture;
+        InverseSize = new SimpleVector(1.0f/ outPutTexture.getWidth() ,1.0f/ outPutTexture.getHeight() ,0);
     }
 
 
