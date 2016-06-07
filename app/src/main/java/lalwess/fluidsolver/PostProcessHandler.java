@@ -20,7 +20,7 @@ public class PostProcessHandler {
     public NPOTTexture density;
 //    public NPOTTexture pressure;
 //    public NPOTTexture diffusion;
-//    public NPOTTexture divergence;
+   public NPOTTexture divergence;
 //    public NPOTTexture vorticity;
 
 
@@ -129,6 +129,7 @@ public class PostProcessHandler {
 
 
 
+
     public PostProcessHandler(Resources res, FrameBuffer fb) {
 
 
@@ -177,6 +178,13 @@ public class PostProcessHandler {
         fb.display();
 
 
+        fb.setRenderTarget(divergence);
+        fb.clear();
+        divergenceWorld.renderScene(fb);
+        divergenceWorld.draw(fb);
+        fb.display();
+
+
 
         if(outPutTexture == null) {
             fb.removeRenderTarget();
@@ -213,7 +221,7 @@ public class PostProcessHandler {
 
         divergenceObj = Primitives.getPlane(4,10);
         divergenceObj.setOrigin(new SimpleVector(0.01, 0, 0));
-        divergenceHook = new DivergenceHook(this,advectingShader);
+        divergenceHook = new DivergenceHook(this,divergenceShader);
         divergenceObj.setShader(divergenceShader);
         divergenceObj.setRenderHook(divergenceHook);
         divergenceObj.setTexture(advecting_ti);
@@ -366,6 +374,8 @@ public class PostProcessHandler {
         // theRenderspot.setTexture(screens_ti);
 
 
+
+      //  tm.replaceTexture();
         //  boundary_ti=new TextureInfo(TextureManager.getInstance().getTextureID("processingTexture"));
         // screens_ti.add(TextureManager.getInstance().getTextureID("glowscenemidp"), TextureInfo.MODE_ADD);
         // theRenderspot.setTexture(screens_ti);
