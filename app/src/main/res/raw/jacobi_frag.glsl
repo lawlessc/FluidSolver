@@ -1,19 +1,19 @@
-uniform sampler2D Pressure;//Pressure
-uniform sampler2D Divergence; //Divergence
+uniform lowp sampler2D textureUnit0;//Pressure
+uniform lowp sampler2D textureUnit1;//Divergence
 //uniform sampler2D Obstacles;
 
-uniform float Alpha;
-uniform float InverseBeta;
+uniform  lowp float Alpha;
+uniform  lowp float InverseBeta;
 
 void main()
 {
     ivec2 T = ivec2(gl_FragCoord.xy);
 
     // Find neighboring pressure:
-    vec4 pN = texelFetchOffset(Pressure, T, 0, ivec2(0, 1));
-    vec4 pS = texelFetchOffset(Pressure, T, 0, ivec2(0, -1));
-    vec4 pE = texelFetchOffset(Pressure, T, 0, ivec2(1, 0));
-    vec4 pW = texelFetchOffset(Pressure, T, 0, ivec2(-1, 0));
+    lowp vec4 pN = texture2D(textureUnit0, T +vec2(0, 1));
+    lowp vec4 pS = texture2D(textureUnit0, T +vec2(0, -1));
+    lowp vec4 pE = texture2D(textureUnit0, T +vec2(1, 0));
+    lowp vec4 pW = texture2D(textureUnit0, T +vec2(-1, 0));
    // vec4 pC = texelFetch(Pressure, T, 0);
 
     // Find neighboring obstacles:
@@ -28,6 +28,6 @@ void main()
     //if (oE.x > 0) pE = pC;
    // if (oW.x > 0) pW = pC;
 
-    vec4 bC = texelFetch(Divergence, T, 0);
+    vec4 bC = texture2D(textureUnit1,T);
     gl_FragColor = (pW + pE + pS + pN + Alpha * bC) * InverseBeta;
 }

@@ -4,12 +4,41 @@ import com.threed.jpct.GLSLShader;
 import com.threed.jpct.IRenderHook;
 import com.threed.jpct.Object3D;
 
+import lalwess.fluidsolver.PostProcessHandler;
+
 /**
  * Created by Chris on 29/05/2016.
  */
 public class JacobiRenderHook  implements IRenderHook {
+
+
+
+    PostProcessHandler parent;
+    GLSLShader advection;
+
+
+
+
+
+    public JacobiRenderHook(PostProcessHandler parent , GLSLShader advection)
+    {
+        this.parent=parent;
+        this.advection =advection;
+
+
+    }
+
+
+
+
     @Override
     public void beforeRendering(int i) {
+
+
+
+
+    //    advection.setStaticUniform("Alpha", parent.);
+     //   advection.setStaticUniform("InverseBeta", parent.CELLSIZE);
 
     }
 
