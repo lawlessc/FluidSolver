@@ -7,7 +7,7 @@ uniform  lowp float InverseBeta;
 
 void main()
 {
-    ivec2 T = ivec2(gl_FragCoord.xy);
+    lowp vec2 T = vec2(gl_FragCoord.xy);
 
     // Find neighboring pressure:
     lowp vec4 pN = texture2D(textureUnit0, T +vec2(0, 1));
@@ -28,6 +28,6 @@ void main()
     //if (oE.x > 0) pE = pC;
    // if (oW.x > 0) pW = pC;
 
-    vec4 bC = texture2D(textureUnit1,T);
+   lowp vec4  bC = texture2D(textureUnit1,T);
     gl_FragColor = (pW + pE + pS + pN + Alpha * bC) * InverseBeta;
 }
