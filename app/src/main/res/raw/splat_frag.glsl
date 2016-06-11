@@ -1,16 +1,16 @@
 
-uniform vec2 Point;
-uniform float Radius;
-uniform vec3 FillColor;
+uniform lowp vec3 Point;
+uniform lowp float Radius;
+uniform lowp vec3 FillColor;
 
 void main()
 {
-    float d = distance(Point, gl_FragCoord.xy);
+    lowp float d = distance(Point.xy, gl_FragCoord.xy);
     if (d < Radius) {
-        float a = (Radius - d) * 0.5;
+       lowp float a = (Radius - d) * 0.5;
         a = min(a, 1.0);
-        FragColor = vec4(FillColor, a);
+        gl_FragColor = vec4(FillColor, a);
     } else {
-        FragColor = vec4(0);
+        gl_FragColor = vec4(0);
     }
 }

@@ -14,7 +14,7 @@ public class JacobiRenderHook  implements IRenderHook {
 
 
     PostProcessHandler parent;
-    GLSLShader advection;
+    GLSLShader jacobi;
 
 
 
@@ -23,7 +23,7 @@ public class JacobiRenderHook  implements IRenderHook {
     public JacobiRenderHook(PostProcessHandler parent , GLSLShader advection)
     {
         this.parent=parent;
-        this.advection =advection;
+        this.jacobi =advection;
 
 
     }
@@ -37,7 +37,7 @@ public class JacobiRenderHook  implements IRenderHook {
 
 
 
-        advection.setStaticUniform("Alpha", parent.alpha);
+        jacobi.setStaticUniform("Alpha", parent.alpha);
      //   advection.setStaticUniform("InverseBeta", parent.CELLSIZE);
 
     }

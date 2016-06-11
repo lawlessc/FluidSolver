@@ -13,16 +13,16 @@ public class DivergenceHook  implements IRenderHook {
 
 
     PostProcessHandler parent;
-    GLSLShader advection;
+    GLSLShader divergence;
 
 
 
 
 
-    public DivergenceHook(PostProcessHandler parent , GLSLShader advection)
+    public DivergenceHook(PostProcessHandler parent , GLSLShader divergence)
     {
         this.parent=parent;
-        this.advection =advection;
+        this.divergence =divergence;
 
 
     }
@@ -30,7 +30,7 @@ public class DivergenceHook  implements IRenderHook {
 
     @Override
     public void beforeRendering(int i) {
-        advection.setStaticUniform("HalfInverseCellSize", parent.HALFCELL);
+        divergence.setStaticUniform("HalfInverseCellSize", parent.HALFCELL);
     }
 
     @Override
