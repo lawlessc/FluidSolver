@@ -168,7 +168,7 @@ public class PostProcessHandler {
 
     World displayWorld;
     Camera displayCam = null;
-    TextureInfo display_ti;
+    //TextureInfo display_ti;
     GLSLShader displayShader = null;
     Object3D displayObj = null;
 
@@ -214,49 +214,55 @@ public class PostProcessHandler {
         fb.display();
 
 
-        fb.setRenderTarget(density);
-        fb.clear();
-        advectDensityWorld.renderScene(fb);
-        advectDensityWorld.draw(fb);
-        fb.display();
-
-       //IMPULSE
-        fb.setRenderTarget(pressure);
-        fb.clear();
-        ImpulseWorld.renderScene(fb);
-        ImpulseWorld.draw(fb);
-        fb.display();
-
-
-        fb.setRenderTarget(divergence);
-        fb.clear();
-        divergenceWorld.renderScene(fb);
-        divergenceWorld.draw(fb);
-        fb.display();
-
-
-
-
-        for(int i =0 ; i < JACOBI_ITERATIONS ; i ++)
-        {
-            fb.setRenderTarget(pressure);
-            fb.clear();
-            jacobiWorld.renderScene(fb);
-            jacobiWorld.draw(fb);
-            fb.display();
-        }
-
-
-         //SUBTRACT GRADIENT
-
-       fb.setRenderTarget(velocity);
-       fb.clear();
-       SubtractGradientWorld.renderScene(fb);
-       SubtractGradientWorld.draw(fb);
-       fb.display();
-
-
-
+//        fb.setRenderTarget(density);
+//        fb.clear();
+//        advectDensityWorld.renderScene(fb);
+//        advectDensityWorld.draw(fb);
+//        fb.display();
+//
+//       //IMPULSE is applie
+//        fb.setRenderTarget(density);
+//        fb.clear();
+//        ImpulseWorld.renderScene(fb);
+//        ImpulseWorld.draw(fb);
+//        fb.display();
+//
+//        fb.setRenderTarget(pressure);
+//        fb.clear();
+//        ImpulseWorld.renderScene(fb);
+//        ImpulseWorld.draw(fb);
+//        fb.display();
+//
+//
+//        fb.setRenderTarget(divergence);
+//        fb.clear();
+//        divergenceWorld.renderScene(fb);
+//        divergenceWorld.draw(fb);
+//        fb.display();
+//
+//
+//
+//
+//        for(int i =0 ; i < JACOBI_ITERATIONS ; i ++)
+//        {
+//            fb.setRenderTarget(pressure);
+//            fb.clear();
+//            jacobiWorld.renderScene(fb);
+//            jacobiWorld.draw(fb);
+//            fb.display();
+//        }
+//
+//
+//         //SUBTRACT GRADIENT
+//
+//       fb.setRenderTarget(velocity);
+//       fb.clear();
+//       SubtractGradientWorld.renderScene(fb);
+//       SubtractGradientWorld.draw(fb);
+//       fb.display();
+//
+//
+//
 
 
 
@@ -288,13 +294,13 @@ public class PostProcessHandler {
         advectingObj = Primitives.getPlane(4,10);
         advectingObj.setOrigin(new SimpleVector(0.01, 0, 0));
         advectionHook = new AdvectionHook(this,advectingShader);
+        advectingObj.setCulling(false);
         advectingObj.setShader(advectingShader);
         advectingObj.setRenderHook(advectionHook);
         advectingObj.setTexture(advecting_ti);
-
-
-        advectingObj.setCulling(false);
         AdvectingWorld.addObject(advectingObj);
+
+
 
         advectDensity = Primitives.getPlane(4,10);
         advectDensity.setOrigin(new SimpleVector(0.01, 0, 0));
@@ -320,7 +326,7 @@ public class PostProcessHandler {
         divergenceObj.setCulling(false);
         divergenceObj.setShader(divergenceShader);
         divergenceObj.setRenderHook(divergenceHook);
-        divergenceObj.setTexture(advecting_ti);
+        divergenceObj.setTexture(divergence_ti);
         divergenceWorld.addObject(divergenceObj);
 
 
@@ -339,7 +345,7 @@ public class PostProcessHandler {
         subtractHook = new SubtractHook(this,subGradientShader);
         subGradientObj.setCulling(false);
         subGradientObj.setShader(subGradientShader);
-        subGradientObj.setRenderHook(jacobiRenderHook);
+        subGradientObj.setRenderHook(subtractHook);
         subGradientObj.setTexture(subGradient_ti);
         SubtractGradientWorld.addObject(jacobiObj);
 
@@ -469,7 +475,7 @@ public class PostProcessHandler {
 
 
         advecting_ti   =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
-        advecting_ti.add(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG), TextureInfo.MODE_ADD);
+     //   advecting_ti.add(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG), TextureInfo.MODE_ADD);
 
 
 
@@ -482,7 +488,7 @@ public class PostProcessHandler {
 
       //  adding_ti=new TextureInfo(TextureManager.getInstance().getTextureID("processingTexture"));
 
-        divergence_ti=new TextureInfo(TextureManager.getInstance().getTextureID("processingTexture"));
+        divergence_ti=new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
 
         jacobi_ti   =new TextureInfo(TextureManager.getInstance().getTextureID("pressure"));
         jacobi_ti.add(TextureManager.getInstance().getTextureID("density"), TextureInfo.MODE_ADD);

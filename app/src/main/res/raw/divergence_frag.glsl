@@ -9,6 +9,8 @@ void main()
 {
     lowp vec2 T = v_texCoord.xy;
 
+
+
     // Find neighboring velocities:
     lowp vec2 vN = texture2D(textureUnit0, T +vec2(0, 1)).xy;
     lowp vec2 vS = texture2D(textureUnit0, T +vec2(0, -1)).xy;
@@ -29,5 +31,7 @@ void main()
 
    // gl_FragColor = HalfInverseCellSize * (vE.x - vW.x + vN.y - vS.y);
 
-    gl_FragColor = vec4(HalfInverseCellSize * (vE.x - vW.x + vN.y - vS.y)  ,0 ,0 ,0);
+       lowp float fin = HalfInverseCellSize * (vE.x - vW.x + vN.y - vS.y);
+
+    gl_FragColor = vec4(fin,fin,fin,1);
 }

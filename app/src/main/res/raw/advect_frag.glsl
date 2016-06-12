@@ -1,6 +1,5 @@
 
 uniform sampler2D textureUnit0;//Veclocity
-
 uniform sampler2D textureUnit1;//source texture
 
 

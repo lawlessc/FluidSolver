@@ -36,7 +36,7 @@ void main()
     //if (oW.x > 0) { pW = pC; obstV.x = oW.y; vMask.x = 0; }
 
     // Enforce the free-slip boundary condition:
-    lowp vec2 oldV = texelFetch(Velocity, T, 0).xy;
+    lowp vec2 oldV = texture2D(Velocity, T).xy;
     lowp vec2 grad =  vec2(pE - pW, pN - pS) * GradientScale;
     lowp vec2 newV = oldV - grad;
 
