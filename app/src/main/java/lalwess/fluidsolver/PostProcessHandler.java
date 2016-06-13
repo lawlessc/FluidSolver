@@ -52,7 +52,7 @@ public class PostProcessHandler {
 
 
 
-    Boolean textureCompression= false;
+    Boolean textureCompression= true;
     Boolean textureFiltering= true;
     Boolean textureMipMap= false;
     Boolean firstRun = true;
@@ -102,59 +102,42 @@ public class PostProcessHandler {
     public NPOTTexture pressure;
     //    public NPOTTexture diffusion;
     public NPOTTexture divergence;
-    public NPOTTexture vorticity;
+   // public NPOTTexture vorticity;
 
 
 
 
     World AdvectingWorld;
     Camera camb = null;
-    TextureInfo advecting_ti;
+    TextureInfo advecting_ti= null;
     GLSLShader advectingShader = null;
     Object3D  advectingObj = null;
 
 
-
-
-
-
-
-
-
     World advectDensityWorld;
     Camera camden = null;
-    TextureInfo advectdensity_ti;
+    TextureInfo advectdensity_ti= null;
     Object3D  advectDensity = null;
-
-
-
-
 
     World ImpulseWorld;
     Camera impulseCam = null;
-    TextureInfo impulse_ti;
+    TextureInfo impulse_ti= null;
     GLSLShader impulseShader = null;
     Object3D impulseObj = null;
 
-
     World divergenceWorld;
     Camera camd = null;
-    TextureInfo divergence_ti;
+    TextureInfo divergence_ti= null;
     GLSLShader divergenceShader = null;
     Object3D  divergenceObj = null;
-
 
     //This step is carried out multiple times
     World jacobiWorld;
     Camera camf = null;
-    TextureInfo jacobi_ti;
+    TextureInfo jacobi_ti= null;
     Object3D  jacobiObj = null;
     GLSLShader jacobiShader = null;
 
-
-
-    //World gradientWorld;
-  //  Camera gradCam = null;
 
     //Gradient Subtraction, pressure subtracted from velocity
     World SubtractGradientWorld;
@@ -164,11 +147,8 @@ public class PostProcessHandler {
     Object3D subGradientObj = null;
 
 
-
-
     World displayWorld;
     Camera displayCam = null;
-    //TextureInfo display_ti;
     GLSLShader displayShader = null;
     Object3D displayObj = null;
 
@@ -176,17 +156,16 @@ public class PostProcessHandler {
 
 
     public PostProcessHandler(Resources res, FrameBuffer fb) {
-
-
+        loadShaders(res);
       setUpCameras();//worlds
-
-      loadShaders(res);
-      setupTextures(fb.getWidth(),fb.getHeight());
         InverseSize = new SimpleVector(1.0f/ fb.getWidth() ,1.0f/ fb.getHeight() ,0);
+        splatRadius =   fb.getWidth() /8.0f;
+        splatPos    =  new SimpleVector(  fb.getWidth() / 2.0f, fb.getWidth() /2.0f , 0);
 
 
-      splatRadius =   fb.getWidth() /8.0f;
-      splatPos    =  new SimpleVector(  fb.getWidth() / 2.0f, fb.getWidth() /2.0f , 0);
+
+
+      setupTextures(fb.getWidth(),fb.getHeight());
 
 
       setupTextureInfos();
@@ -294,16 +273,17 @@ public class PostProcessHandler {
         advectingObj = Primitives.getPlane(4,10);
         advectingObj.setOrigin(new SimpleVector(0.01, 0, 0));
         advectionHook = new AdvectionHook(this,advectingShader);
+
+        AdvectingWorld.addObject(advectingObj);
         advectingObj.setCulling(false);
         advectingObj.setShader(advectingShader);
         advectingObj.setRenderHook(advectionHook);
         advectingObj.setTexture(advecting_ti);
-        AdvectingWorld.addObject(advectingObj);
 
 
 
         advectDensity = Primitives.getPlane(4,10);
-        advectDensity.setOrigin(new SimpleVector(0.01, 0, 0));
+        advectDensity.setOrigin(new SimpleVector(0.001, 0, 0));
         advectionHook = new AdvectionHook(this,advectingShader);
         advectDensity.setCulling(false);
         advectDensity.setShader(advectingShader);
@@ -425,11 +405,6 @@ public class PostProcessHandler {
         camd.setPosition(-10, 0, 0);
         camd.lookAt(new SimpleVector(0, 0, 0));
 
-    //    gradientWorld = new World();
-      //  gradCam=gradientWorld.getCamera();
-     //   gradCam.setPosition(-10, 0, 0);
-     //   gradCam.lookAt(new SimpleVector(0, 0, 0));
-
 
 
         jacobiWorld = new World();
@@ -473,18 +448,13 @@ public class PostProcessHandler {
 
     public void setupTextureInfos() {
 
-
-        advecting_ti   =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
-     //   advecting_ti.add(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG), TextureInfo.MODE_ADD);
-
-
+        advecting_ti   =  new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
+        advecting_ti.add(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG), TextureInfo.MODE_ADD);
 
         advectdensity_ti =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
         advectdensity_ti.add(TextureManager.getInstance().getTextureID(DENSITY_TEXTURE_TAG), TextureInfo.MODE_ADD);
 
         impulse_ti=new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
-
-
 
       //  adding_ti=new TextureInfo(TextureManager.getInstance().getTextureID("processingTexture"));
 
@@ -492,7 +462,6 @@ public class PostProcessHandler {
 
         jacobi_ti   =new TextureInfo(TextureManager.getInstance().getTextureID("pressure"));
         jacobi_ti.add(TextureManager.getInstance().getTextureID("density"), TextureInfo.MODE_ADD);
-
 
         subGradient_ti =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
         subGradient_ti.add(TextureManager.getInstance().getTextureID("pressure"), TextureInfo.MODE_ADD);

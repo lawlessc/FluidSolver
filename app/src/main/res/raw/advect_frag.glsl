@@ -20,7 +20,8 @@ void main()
                            //1.0 is inversesize
     highp vec2 u = texture2D(textureUnit0, inversesize.xy * fragCoord).xy;
     highp vec2 coord = inversesize.xy  * (fragCoord - TimeStep * u);      //1.0 is inversesize
-    gl_FragColor = Dissipation * texture2D(textureUnit1, coord);
+  //  gl_FragColor = Dissipation * texture2D(textureUnit1, coord);
+     gl_FragColor = vec4(0,1,0,1);
 }
 
 
