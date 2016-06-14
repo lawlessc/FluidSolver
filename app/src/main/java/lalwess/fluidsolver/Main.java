@@ -39,24 +39,19 @@ public class Main extends Activity implements OnScaleGestureListener /*,Observer
 	private MyRenderer renderer = null;
 	//private final MyRenderer renderer = new MyRenderer();
 	private FrameBuffer fb = null;
-	private RGBColor back = new RGBColor(90, 50, 100);
+	//private RGBColor back = new RGBColor(90, 50, 100);
 
 	private boolean useRetroRender = false;
 
 	public enum allGameObjects {
         INSTANCE;
 
-
-;
     	//might make sense to start this at 0 anyway
     	public long runningTime=0;
 		public long runningTimeSeconds;
     	public Boolean isActionPaused = false;
 
-
-
-
-		public PostProcessHandler processHandler = null;
+         public PostProcessHandler processHandler = null;
 
     }
 	long MS_PER_UPDATE =16;
@@ -83,11 +78,13 @@ public class Main extends Activity implements OnScaleGestureListener /*,Observer
 		Logger.log("onCreate");
 		//Logger.setLogLevel(Logger.LL_DEBUG);
 		//Logger.setLogLevel(Logger.);
-		//Logger.setLogLevel(Logger.LL_VERBOSE);
+		//
+		//
+		Logger.setLogLevel(Logger.LL_VERBOSE);
 
 
 		//Context baseContext= this.getBaseContext();
-		Resources res = getResources();
+		//Resources res = getResources();
 
 
 		if (master != null) {
@@ -109,18 +106,18 @@ public class Main extends Activity implements OnScaleGestureListener /*,Observer
 			// Enable the OpenGL ES2.0 context
 			mGLView.setEGLContextClientVersion(2);
 			//
-			mGLView.setEGLConfigChooser(new AAConfigChooser(mGLView));
+			//mGLView.setEGLConfigChooser(new AAConfigChooser(mGLView));
 
 			renderer = new MyRenderer();
 			mGLView.setRenderer(renderer);
 
-			Texture.defaultToMipmapping(true);
+			Texture.defaultToMipmapping(false);
 			Texture.defaultTo4bpp(true);
 			Texture.defaultToKeepPixels(true);
 			Config.maxTextureLayers = 4;
 			Config.maxPolysVisible = 5000;
 			Config.farPlane = 10500;
-			Config.nearPlane = 0;
+			//Config.nearPlane = 0;
 		}
 
 		
@@ -265,7 +262,7 @@ public class Main extends Activity implements OnScaleGestureListener /*,Observer
 
 
 				MemoryHelper.compact();
-//				Main.allGameObjects.INSTANCE.world.compileAllObjects();
+				//Main.allGameObjects.INSTANCE.world.compileAllObjects();
 
 			}
 
@@ -313,7 +310,7 @@ public class Main extends Activity implements OnScaleGestureListener /*,Observer
 
 		//	blitNumber(lfps, 5, 5);
 			
-			fb.display();
+		//	fb.display();
 
 			if (System.currentTimeMillis() - time >= 1000) {
 				lfps = fps;

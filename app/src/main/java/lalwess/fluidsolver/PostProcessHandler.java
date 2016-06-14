@@ -17,30 +17,11 @@ import lalwess.fluidsolver.ResolverRenderHooks.SubtractHook;
  */
 public class PostProcessHandler {
 
-    //public NPOTTexture processingTexture;
-
-
-
 
     public NPOTTexture outPutTexture = null; //if not a null we output texture to this.
 
      World FillWorld;
      Camera fillcam = null;
-
-
-
-   // World BoundaryWorld;
-   // Camera camc = null;
-
-
-
-
-    //World postProcessWorld;
-    //where our texture /object3d will exist to render a fullscreen quad;
-    Camera cam = null;
-
-    public int RenderMode = 0;  //Render Mode 0 is regular, 1 is glow, 2 is godrays
-
 
 
 
@@ -86,32 +67,30 @@ public class PostProcessHandler {
     //public float HalfInverseCellSize;
 
 
-
-
-
-    AdvectionHook  advectionHook = null;
-    DivergenceHook divergenceHook=null;
-    JacobiRenderHook jacobiRenderHook = null;
-    SubtractHook subtractHook = null;
-    ImpulseHook impulseHook = null;
-
-
+    public AdvectionHook  advectionHook = null;
+    public AdvectionHook  advectionHookForDensity = null;
+    public DivergenceHook divergenceHook=null;
+    public JacobiRenderHook jacobiRenderHook = null;
+    public SubtractHook subtractHook = null;
+    public ImpulseHook impulseHook = null;
 
     public NPOTTexture velocity;//VECLOCITY IF FOR ADVECTING
+    public NPOTTexture velocity2;//VECLOCITY IF FOR ADVECTING
     public NPOTTexture density;
+    public NPOTTexture density2;
     public NPOTTexture pressure;
+    public NPOTTexture pressure2;
     //    public NPOTTexture diffusion;
     public NPOTTexture divergence;
+    public NPOTTexture divergence2;
    // public NPOTTexture vorticity;
 
 
-
-
-    World AdvectingWorld;
-    Camera camb = null;
-    TextureInfo advecting_ti= null;
-    GLSLShader advectingShader = null;
-    Object3D  advectingObj = null;
+    public World AdvectingWorld;
+    public Camera camb = null;
+    public TextureInfo advecting_ti= null;
+    public GLSLShader advectingShader;
+    public Object3D  advectingObj = null;
 
 
     World advectDensityWorld;
@@ -128,14 +107,14 @@ public class PostProcessHandler {
     World divergenceWorld;
     Camera camd = null;
     TextureInfo divergence_ti= null;
-    GLSLShader divergenceShader = null;
+    GLSLShader divergenceShader;
     Object3D  divergenceObj = null;
 
     //This step is carried out multiple times
     World jacobiWorld;
     Camera camf = null;
     TextureInfo jacobi_ti= null;
-    Object3D  jacobiObj = null;
+    Object3D  jacobiObj;
     GLSLShader jacobiShader = null;
 
 
@@ -147,29 +126,26 @@ public class PostProcessHandler {
     Object3D subGradientObj = null;
 
 
-    World displayWorld;
-    Camera displayCam = null;
-    GLSLShader displayShader = null;
-    Object3D displayObj = null;
+    public World displayWorld;
+    public Camera displayCam = null;
+    public GLSLShader displayShader = null;
+    public Object3D displayObj = null;
 
 
+
+    public boolean textSwitch= true;
 
 
     public PostProcessHandler(Resources res, FrameBuffer fb) {
-        loadShaders(res);
-      setUpCameras();//worlds
-        InverseSize = new SimpleVector(1.0f/ fb.getWidth() ,1.0f/ fb.getHeight() ,0);
-        splatRadius =   fb.getWidth() /8.0f;
-        splatPos    =  new SimpleVector(  fb.getWidth() / 2.0f, fb.getWidth() /2.0f , 0);
+    loadShaders(res);
+    setUpCameras();//worlds
+    setupTextures(fb.getWidth(),fb.getHeight());
 
-
-
-
-      setupTextures(fb.getWidth(),fb.getHeight());
-
-
-      setupTextureInfos();
-      setupObjects();
+     InverseSize = new SimpleVector(1.0f/ fb.getWidth() ,1.0f/ fb.getHeight() ,0);
+     splatRadius =   fb.getWidth() /8.0f;
+     splatPos    =  new SimpleVector(  fb.getWidth() / 2.0f, fb.getWidth() /2.0f , 0);
+     setupTextureInfos();
+     setupObjects();
     }
 
 
@@ -186,60 +162,119 @@ public class PostProcessHandler {
     }
 
 
-        fb.setRenderTarget(velocity);
+
+
+        if(textSwitch)
+        {
+            tm.replaceTexture(VELOCITY_TEXTURE_TAG,velocity);
+            fb.setRenderTarget(velocity2);
+        }
+        else
+        {
+
+            tm.replaceTexture(VELOCITY_TEXTURE_TAG,velocity2);
+            fb.setRenderTarget(velocity);
+        }
+
+
+      //  fb.setRenderTarget(velocity);
         fb.clear();
         AdvectingWorld.renderScene(fb);
         AdvectingWorld.draw(fb);
         fb.display();
 
 
-//        fb.setRenderTarget(density);
-//        fb.clear();
-//        advectDensityWorld.renderScene(fb);
-//        advectDensityWorld.draw(fb);
-//        fb.display();
+
+
+
+        if(textSwitch)
+        {
+            tm.replaceTexture(VELOCITY_TEXTURE_TAG,density);
+            fb.setRenderTarget(density2);
+        }
+        else
+        {
+
+            tm.replaceTexture(VELOCITY_TEXTURE_TAG,density2);
+            fb.setRenderTarget(density);
+        }
+
+
+        //fb.setRenderTarget(density);
+        fb.clear();
+        advectDensityWorld.renderScene(fb);
+        advectDensityWorld.draw(fb);
+        fb.display();
+
+
 //
 //       //IMPULSE is applie
-//        fb.setRenderTarget(density);
-//        fb.clear();
-//        ImpulseWorld.renderScene(fb);
-//        ImpulseWorld.draw(fb);
-//        fb.display();
+        //fb.setRenderTarget(density);
+        fb.clear();
+        ImpulseWorld.renderScene(fb);
+        ImpulseWorld.draw(fb);
+        fb.display();
 //
-//        fb.setRenderTarget(pressure);
-//        fb.clear();
-//        ImpulseWorld.renderScene(fb);
-//        ImpulseWorld.draw(fb);
-//        fb.display();
+
+        if(textSwitch)
+        {
+            tm.replaceTexture(VELOCITY_TEXTURE_TAG,pressure);
+            fb.setRenderTarget(pressure2);
+        }
+        else
+        {
+
+            tm.replaceTexture(VELOCITY_TEXTURE_TAG,pressure2);
+            fb.setRenderTarget(pressure);
+        }
+
+        fb.setRenderTarget(pressure);
+        fb.clear();
+        ImpulseWorld.renderScene(fb);
+        ImpulseWorld.draw(fb);
+        fb.display();
+
+
+
+        if(textSwitch)
+        {
+            tm.replaceTexture(VELOCITY_TEXTURE_TAG,divergence);
+            fb.setRenderTarget(divergence2);
+        }
+        else
+        {
+
+            tm.replaceTexture(VELOCITY_TEXTURE_TAG,divergence2);
+            fb.setRenderTarget(divergence);
+        }
+
+        fb.setRenderTarget(divergence);
+        fb.clear();
+        divergenceWorld.renderScene(fb);
+        divergenceWorld.draw(fb);
+        fb.display();
+
+
+
+
+        for(int i =0 ; i < JACOBI_ITERATIONS ; i ++)
+        {
+            fb.setRenderTarget(pressure);
+            fb.clear();
+            jacobiWorld.renderScene(fb);
+            jacobiWorld.draw(fb);
+            fb.display();
+        }
+
 //
-//
-//        fb.setRenderTarget(divergence);
-//        fb.clear();
-//        divergenceWorld.renderScene(fb);
-//        divergenceWorld.draw(fb);
-//        fb.display();
-//
-//
-//
-//
-//        for(int i =0 ; i < JACOBI_ITERATIONS ; i ++)
-//        {
-//            fb.setRenderTarget(pressure);
-//            fb.clear();
-//            jacobiWorld.renderScene(fb);
-//            jacobiWorld.draw(fb);
-//            fb.display();
-//        }
-//
-//
-//         //SUBTRACT GRADIENT
-//
-//       fb.setRenderTarget(velocity);
-//       fb.clear();
-//       SubtractGradientWorld.renderScene(fb);
-//       SubtractGradientWorld.draw(fb);
-//       fb.display();
-//
+         //SUBTRACT GRADIENT
+
+       fb.setRenderTarget(velocity);
+       fb.clear();
+       SubtractGradientWorld.renderScene(fb);
+       SubtractGradientWorld.draw(fb);
+       fb.display();
+
 //
 //
 
@@ -262,6 +297,15 @@ public class PostProcessHandler {
             displayWorld.draw(fb);
             fb.display();
         }
+
+
+        if(textSwitch)
+        {
+            textSwitch=false;
+        }
+        else {
+            textSwitch=true;
+        }
     }
 
 
@@ -274,22 +318,28 @@ public class PostProcessHandler {
         advectingObj.setOrigin(new SimpleVector(0.01, 0, 0));
         advectionHook = new AdvectionHook(this,advectingShader);
 
-        AdvectingWorld.addObject(advectingObj);
-        advectingObj.setCulling(false);
-        advectingObj.setShader(advectingShader);
+
         advectingObj.setRenderHook(advectionHook);
+        advectingObj.setShader(advectingShader);
+
         advectingObj.setTexture(advecting_ti);
+       // advectingObj.setTexture(VELOCITY_TEXTURE_TAG);
+        advectingObj.setCulling(false);
+      //  advectingObj.build();
+        AdvectingWorld.addObject(advectingObj);
+
+
 
 
 
         advectDensity = Primitives.getPlane(4,10);
         advectDensity.setOrigin(new SimpleVector(0.001, 0, 0));
-        advectionHook = new AdvectionHook(this,advectingShader);
+        advectionHookForDensity = new AdvectionHook(this,advectingShader);
         advectDensity.setCulling(false);
         advectDensity.setShader(advectingShader);
-        advectDensity.setRenderHook(advectionHook);
+        advectDensity.setRenderHook(advectionHookForDensity);
         advectDensity.setTexture(advectdensity_ti);
-        advectDensityWorld.addObject(advectingObj);
+        advectDensityWorld.addObject(advectDensity);
 
         impulseObj = Primitives.getPlane(4,10);
         impulseObj.setOrigin(new SimpleVector(0.01, 0, 0));
@@ -350,26 +400,57 @@ public class PostProcessHandler {
         tm.addTexture(VELOCITY_TEXTURE_TAG, velocity);
 
 
-        pressure = new NPOTTexture(w , h, RGBColor.GREEN);
+
+        velocity2 = new NPOTTexture(w , h, RGBColor.BLACK);
+        velocity2.setFiltering(textureFiltering);
+        velocity2.setMipmap(textureMipMap);
+        velocity2.setTextureCompression(textureCompression);// texture compression eliminates the artifacts
+        //tm.addTexture(VELOCITY_TEXTURE_TAG, velocity);
+
+
+
+
+        pressure = new NPOTTexture(w , h, RGBColor.BLACK);
         pressure.setFiltering(textureFiltering);
         pressure.setMipmap(textureMipMap);
         pressure.setTextureCompression(textureCompression);// texture compression eliminates the artifacts
         tm.addTexture("pressure", pressure);
 
+        pressure2 = new NPOTTexture(w , h, RGBColor.BLACK);
+        pressure2.setFiltering(textureFiltering);
+        pressure2.setMipmap(textureMipMap);
+        pressure2.setTextureCompression(textureCompression);// texture compression eliminates the artifacts
+        //tm.addTexture("pressure", pressure);
 
 
-        divergence = new NPOTTexture(w , h, RGBColor.GREEN);
+
+        divergence = new NPOTTexture(w , h, RGBColor.BLACK);
         divergence.setFiltering(textureFiltering);
         divergence.setMipmap(textureMipMap);
         divergence.setTextureCompression(textureCompression);// texture compression eliminates the artifacts
         tm.addTexture("divergence", divergence);
 
+        divergence2 = new NPOTTexture(w , h, RGBColor.BLACK);
+        divergence2.setFiltering(textureFiltering);
+        divergence2.setMipmap(textureMipMap);
+        divergence2.setTextureCompression(textureCompression);// texture compression eliminates the artifacts
+      //
+        //  tm.addTexture("divergence", divergence);
 
-        density = new NPOTTexture(w , h, RGBColor.GREEN);
+
+        density = new NPOTTexture(w , h, RGBColor.BLACK);
         density.setFiltering(textureFiltering);
         density.setMipmap(textureMipMap);
         density.setTextureCompression(textureCompression);
         tm.addTexture(DENSITY_TEXTURE_TAG, density);
+
+        density2 = new NPOTTexture(w , h, RGBColor.BLACK);
+        density2.setFiltering(textureFiltering);
+        density2.setMipmap(textureMipMap);
+        density2.setTextureCompression(textureCompression);
+       // tm.addTexture(DENSITY_TEXTURE_TAG, density);
+
+
     }
 
     public void setUpCameras()
@@ -432,6 +513,8 @@ public class PostProcessHandler {
         String vertexShader =   Loader.loadTextFile(res.openRawResource(R.raw.mainvert));
       //  fillingShader =  new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.fill_frag)));
         advectingShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.advect_frag)));
+
+
 
         divergenceShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.divergence_frag)));
         impulseShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.splat_frag)));

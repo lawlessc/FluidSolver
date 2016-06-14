@@ -8,9 +8,9 @@ import lalwess.fluidsolver.PostProcessHandler;
 
 /**
  * Created by Chris on 29/05/2016.
+ *
  */
 public class AdvectionHook implements IRenderHook {
-
 
     PostProcessHandler parent;
     GLSLShader advection;
@@ -28,9 +28,9 @@ public class AdvectionHook implements IRenderHook {
     @Override
     public void beforeRendering(int i) {
 
-      advection.setStaticUniform("InverseSize", parent.InverseSize);
-        advection.setStaticUniform("TimeStep", parent.TIMESTEP);
-      advection.setStaticUniform("Dissipation",parent.VELOCITY_DISSIPATION);
+      advection.setStaticUniform("inversesize", parent.InverseSize);
+      advection.setStaticUniform("timeStep", parent.TIMESTEP);
+      advection.setStaticUniform("dissipation",parent.VELOCITY_DISSIPATION);
 
 
     }
