@@ -164,17 +164,11 @@ public class PostProcessHandler {
 
 
 
-        if(textSwitch)
-        {
-            tm.replaceTexture(VELOCITY_TEXTURE_TAG,velocity);
-            fb.setRenderTarget(velocity2);
-        }
-        else
-        {
 
-            tm.replaceTexture(VELOCITY_TEXTURE_TAG,velocity2);
-            fb.setRenderTarget(velocity);
-        }
+
+
+        swapTextures(fb,VELOCITY_TEXTURE_TAG , velocity,velocity2);
+
 
 
       //  fb.setRenderTarget(velocity);
@@ -187,17 +181,9 @@ public class PostProcessHandler {
 
 
 
-        if(textSwitch)
-        {
-            tm.replaceTexture(VELOCITY_TEXTURE_TAG,density);
-            fb.setRenderTarget(density2);
-        }
-        else
-        {
 
-            tm.replaceTexture(VELOCITY_TEXTURE_TAG,density2);
-            fb.setRenderTarget(density);
-        }
+
+        swapTextures(fb,DENSITY_TEXTURE_TAG , density,density2);
 
 
         //fb.setRenderTarget(density);
@@ -206,6 +192,30 @@ public class PostProcessHandler {
         advectDensityWorld.draw(fb);
         fb.display();
 
+
+
+
+        if(textSwitch)
+        {
+            textSwitch=false;
+        }
+        else{
+            textSwitch=true;
+        }
+
+
+
+        swapTextures(fb,DENSITY_TEXTURE_TAG , density,density2);
+        swapTextures(fb,VELOCITY_TEXTURE_TAG , velocity,velocity2);
+
+
+        if(textSwitch)
+        {
+            textSwitch=false;
+        }
+        else{
+            textSwitch=true;
+        }
 
 //
 //       //IMPULSE is applie
@@ -216,19 +226,10 @@ public class PostProcessHandler {
         fb.display();
 //
 
-        if(textSwitch)
-        {
-            tm.replaceTexture(VELOCITY_TEXTURE_TAG,pressure);
-            fb.setRenderTarget(pressure2);
-        }
-        else
-        {
 
-            tm.replaceTexture(VELOCITY_TEXTURE_TAG,pressure2);
-            fb.setRenderTarget(pressure);
-        }
+        swapTextures(fb,"pressure" , pressure,pressure2);
 
-        fb.setRenderTarget(pressure);
+       // fb.setRenderTarget(pressure);
         fb.clear();
         ImpulseWorld.renderScene(fb);
         ImpulseWorld.draw(fb);
@@ -236,19 +237,9 @@ public class PostProcessHandler {
 
 
 
-        if(textSwitch)
-        {
-            tm.replaceTexture(VELOCITY_TEXTURE_TAG,divergence);
-            fb.setRenderTarget(divergence2);
-        }
-        else
-        {
+        swapTextures(fb,"divergence" , divergence,divergence2);
 
-            tm.replaceTexture(VELOCITY_TEXTURE_TAG,divergence2);
-            fb.setRenderTarget(divergence);
-        }
-
-        fb.setRenderTarget(divergence);
+      //  fb.setRenderTarget(divergence);
         fb.clear();
         divergenceWorld.renderScene(fb);
         divergenceWorld.draw(fb);
@@ -257,19 +248,44 @@ public class PostProcessHandler {
 
 
 
-        for(int i =0 ; i < JACOBI_ITERATIONS ; i ++)
+        for(int i =1 ; i < JACOBI_ITERATIONS+1 ; i ++)
         {
-            fb.setRenderTarget(pressure);
+
+            int m = i % 2;
+            if( m ==0) {
+                tm.replaceTexture("pressure", pressure);
+                fb.setRenderTarget(pressure2);
+            }
+            else
+            {
+                tm.replaceTexture("pressure", pressure2);
+                fb.setRenderTarget(pressure);
+
+            }
+
+
+
             fb.clear();
             jacobiWorld.renderScene(fb);
             jacobiWorld.draw(fb);
             fb.display();
+
+
+
+
         }
 
 //
          //SUBTRACT GRADIENT
 
-       fb.setRenderTarget(velocity);
+
+
+
+
+
+        swapTextures(fb,VELOCITY_TEXTURE_TAG , velocity,velocity2);
+
+
        fb.clear();
        SubtractGradientWorld.renderScene(fb);
        SubtractGradientWorld.draw(fb);
@@ -278,6 +294,14 @@ public class PostProcessHandler {
 //
 //
 
+
+        if(textSwitch)
+        {
+            textSwitch=false;
+        }
+        else{
+            textSwitch=true;
+        }
 
 
 
@@ -299,13 +323,7 @@ public class PostProcessHandler {
         }
 
 
-        if(textSwitch)
-        {
-            textSwitch=false;
-        }
-        else {
-            textSwitch=true;
-        }
+
     }
 
 
@@ -559,8 +577,26 @@ public class PostProcessHandler {
     }
 
 
+    private void swapTextures(FrameBuffer fb,String name,Texture one ,Texture two ) {
+
+        if (textSwitch) {
+            tm.replaceTexture(name, two);
+            fb.setRenderTarget(one);
+        } else {
+
+            tm.replaceTexture(name, one);
+            fb.setRenderTarget(two);
+        }
+
+    }
+
+    public void setSplatPos(float x , float y)
+    {
 
 
+        y = velocity.getHeight() -y;
+        splatPos = new SimpleVector(x,y,0);
 
+    }
 
 }

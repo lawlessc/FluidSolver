@@ -36,7 +36,7 @@ public class ImpulseHook implements IRenderHook {
     @Override
     public void beforeRendering(int i) {
 
-        impulse.setStaticUniform("Point", point);
+        impulse.setStaticUniform("Point", parent.splatPos);
         impulse.setStaticUniform("Radius", parent.splatRadius);
         impulse.setStaticUniform("FillColor", fillcol);
 

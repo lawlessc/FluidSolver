@@ -441,6 +441,8 @@ private class TapListener implements OnGestureListener, GestureDetector.OnDouble
 	public boolean onDoubleTap(MotionEvent e) {
         int left = mGLView.getLeft();
         int top  =mGLView.getTop();
+
+		allGameObjects.INSTANCE.processHandler.setSplatPos(e.getX() , e.getY());
 		//allGameObjects.INSTANCE.cameraCursor.onDoubleTap(e,fb, left, top);
 		return false;
 	}
