@@ -83,6 +83,8 @@ public class PostProcessHandler {
     //    public NPOTTexture diffusion;
     public NPOTTexture divergence;
     public NPOTTexture divergence2;
+
+    public NPOTTexture Temp;
    // public NPOTTexture vorticity;
 
 
@@ -133,8 +135,6 @@ public class PostProcessHandler {
 
 
 
-    public boolean textSwitch= true;
-
 
     public PostProcessHandler(Resources res, FrameBuffer fb) {
     loadShaders(res);
@@ -158,151 +158,70 @@ public class PostProcessHandler {
         FillWorld.renderScene(fb);//WAS POST PROCESS
         FillWorld.draw(fb);
         fb.display();
+     //   swapVelocties(fb);
         firstRun=false;
     }
 
 
-
-
-
-
-
-        swapTextures(fb,VELOCITY_TEXTURE_TAG , velocity,velocity2);
-
-
-
-      //  fb.setRenderTarget(velocity);
+        fb.setRenderTarget(velocity);
         fb.clear();
         AdvectingWorld.renderScene(fb);
         AdvectingWorld.draw(fb);
         fb.display();
+        swapVelocties();
 
 
-
-
-
-
-
-        swapTextures(fb,DENSITY_TEXTURE_TAG , density,density2);
-
-
-        //fb.setRenderTarget(density);
+        fb.setRenderTarget(density);
         fb.clear();
         advectDensityWorld.renderScene(fb);
         advectDensityWorld.draw(fb);
         fb.display();
+        swapDensity();
 
 
-
-
-        if(textSwitch)
-        {
-            textSwitch=false;
-        }
-        else{
-            textSwitch=true;
-        }
-
-
-
-        swapTextures(fb,DENSITY_TEXTURE_TAG , density,density2);
-        swapTextures(fb,VELOCITY_TEXTURE_TAG , velocity,velocity2);
-
-
-        if(textSwitch)
-        {
-            textSwitch=false;
-        }
-        else{
-            textSwitch=true;
-        }
-
-//
 //       //IMPULSE is applie
-        //fb.setRenderTarget(density);
+        fb.setRenderTarget(density);
         fb.clear();
         ImpulseWorld.renderScene(fb);
         ImpulseWorld.draw(fb);
         fb.display();
-//
+      //  swapDensity(fb);
 
 
-        swapTextures(fb,"pressure" , pressure,pressure2);
-
-       // fb.setRenderTarget(pressure);
-        fb.clear();
-        ImpulseWorld.renderScene(fb);
-        ImpulseWorld.draw(fb);
-        fb.display();
-
-
-
-        swapTextures(fb,"divergence" , divergence,divergence2);
-
-      //  fb.setRenderTarget(divergence);
+        fb.setRenderTarget(divergence);
         fb.clear();
         divergenceWorld.renderScene(fb);
         divergenceWorld.draw(fb);
         fb.display();
 
 
-
+        //WE Clear PRessure
+        fb.setRenderTarget(pressure);
+        fb.clear();
+        fb.display();
+        //swapDivergence(fb);
 
         for(int i =1 ; i < JACOBI_ITERATIONS+1 ; i ++)
         {
 
-            int m = i % 2;
-            if( m ==0) {
-                tm.replaceTexture("pressure", pressure);
-                fb.setRenderTarget(pressure2);
-            }
-            else
-            {
-                tm.replaceTexture("pressure", pressure2);
-                fb.setRenderTarget(pressure);
-
-            }
-
-
-
+            fb.setRenderTarget(pressure);
             fb.clear();
             jacobiWorld.renderScene(fb);
             jacobiWorld.draw(fb);
             fb.display();
-
-
-
-
+            swapPressure();
         }
 
-//
-         //SUBTRACT GRADIENT
 
-
-
-
-
-
-        swapTextures(fb,VELOCITY_TEXTURE_TAG , velocity,velocity2);
-
-
+       fb.setRenderTarget(velocity2);
        fb.clear();
        SubtractGradientWorld.renderScene(fb);
        SubtractGradientWorld.draw(fb);
        fb.display();
+        swapVelocties();
 
 //
 //
-
-
-        if(textSwitch)
-        {
-            textSwitch=false;
-        }
-        else{
-            textSwitch=true;
-        }
-
 
 
         //DISPLAY
@@ -335,19 +254,11 @@ public class PostProcessHandler {
         advectingObj = Primitives.getPlane(4,10);
         advectingObj.setOrigin(new SimpleVector(0.01, 0, 0));
         advectionHook = new AdvectionHook(this,advectingShader);
-
-
         advectingObj.setRenderHook(advectionHook);
         advectingObj.setShader(advectingShader);
-
         advectingObj.setTexture(advecting_ti);
-       // advectingObj.setTexture(VELOCITY_TEXTURE_TAG);
         advectingObj.setCulling(false);
-      //  advectingObj.build();
         AdvectingWorld.addObject(advectingObj);
-
-
-
 
 
         advectDensity = Primitives.getPlane(4,10);
@@ -577,26 +488,69 @@ public class PostProcessHandler {
     }
 
 
-    private void swapTextures(FrameBuffer fb,String name,Texture one ,Texture two ) {
-
-        if (textSwitch) {
-            tm.replaceTexture(name, two);
-            fb.setRenderTarget(one);
-        } else {
-
-            tm.replaceTexture(name, one);
-            fb.setRenderTarget(two);
-        }
-
-    }
+//    private void swapTextures(FrameBuffer fb,String name,Texture one ,Texture two ) {
+//
+//        if (textSwitch) {
+//            tm.replaceTexture(name, two);
+//            fb.setRenderTarget(one);
+//        } else {
+//
+//            tm.replaceTexture(name, one);
+//            fb.setRenderTarget(two);
+//        }
+//
+//    }
 
     public void setSplatPos(float x , float y)
     {
 
-
         y = velocity.getHeight() -y;
         splatPos = new SimpleVector(x,y,0);
-
     }
+
+
+
+    private void swapVelocties()
+    {
+        Temp = velocity ;
+        velocity=velocity2;
+        velocity2=Temp;
+        tm.replaceTexture(VELOCITY_TEXTURE_TAG, velocity2);
+    }
+
+    private void swapDensity()
+    {
+        Temp = density ;
+        density=density2;
+        density2=Temp;
+        tm.replaceTexture(DENSITY_TEXTURE_TAG, density2);
+    }
+
+
+    private void swapPressure()
+    {
+
+        Temp = pressure ;
+        pressure=pressure2;
+        pressure2=Temp;
+        tm.replaceTexture("pressure", pressure2);
+    }
+
+//    private void swapDivergence(FrameBuffer fb)
+//    {
+//
+//        Temp = divergence ;
+//        divergence=divergence2;
+//        divergence2=Temp;
+//
+//        tm.replaceTexture("divergence", divergence2);
+//        fb.setRenderTarget(divergence);
+//
+//    }
+
+
+
+
+
 
 }
