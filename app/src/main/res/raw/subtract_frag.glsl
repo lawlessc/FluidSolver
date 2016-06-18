@@ -41,5 +41,7 @@ void main()
     highp vec2 newV = oldV - grad;
 
     highp vec2 fin = (vMask * newV) + obstV;
-    gl_FragColor = vec4(fin.x,fin.y,0,1);
+   // gl_FragColor = vec4(fin.x,fin.y,0,1);
+     gl_FragColor = vec4(fin.xy,0,1);
+
 }

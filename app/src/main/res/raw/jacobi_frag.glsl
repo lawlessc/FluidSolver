@@ -1,7 +1,6 @@
 uniform lowp sampler2D textureUnit0;//Pressure
 uniform lowp sampler2D textureUnit1;//Divergence
 //uniform sampler2D Obstacles;
-
 uniform  lowp float Alpha;
 uniform  lowp float InverseBeta;
 
@@ -30,4 +29,5 @@ void main()
 
    lowp vec4  bC = texture2D(textureUnit1,T);
     gl_FragColor = (pW + pE + pS + pN + Alpha * bC) * InverseBeta;
+
 }

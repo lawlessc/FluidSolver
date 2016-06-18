@@ -17,11 +17,7 @@ public class ImpulseHook implements IRenderHook {
 
     PostProcessHandler parent;
     GLSLShader impulse;
-    SimpleVector fillcol = new SimpleVector(0.1,1,1);
-    SimpleVector point = new SimpleVector(0.5f,0.5f,0);
-
-
-
+    SimpleVector fillcol = new SimpleVector(1,0.5,0);
 
 
 
@@ -29,8 +25,6 @@ public class ImpulseHook implements IRenderHook {
     {
         this.parent=parent;
         this.impulse =impulse;
-
-
     }
 
     @Override
