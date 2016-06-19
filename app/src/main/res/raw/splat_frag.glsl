@@ -2,7 +2,7 @@
 uniform lowp vec3 Point;
 uniform lowp float Radius;
 uniform lowp vec3 FillColor;
-uniform sampler2D textureUnit0;//Veclocity
+uniform sampler2D textureUnit0;//Veclocity or this case density
 //uniform lowp vec3 FillColor;
 
 
@@ -15,8 +15,8 @@ void main()
         a = min(a, 1.0);
         gl_FragColor = vec4(FillColor, a);
     } else {
-      //return;
+
       gl_FragColor =texture2D(textureUnit0, gl_FragCoord.xy);
-       // gl_FragColor = vec4(0);
+
     }
 }

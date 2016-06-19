@@ -179,33 +179,12 @@ public class Main extends Activity implements OnScaleGestureListener /*,Observer
 	public boolean onTouchEvent(MotionEvent me) {
 		mScaleDetector.onTouchEvent(me);
 		tapdetection.onTouchEvent(me);
-        int left = mGLView.getLeft();
-        int top  =mGLView.getTop();
+    //    int left = mGLView.getLeft();
+    //    int top  =mGLView.getTop();
 
-	
-//		if (me.getAction() == MotionEvent.ACTION_DOWN) {
-//		 if(allGameObjects.INSTANCE.menumanager != null) {
-//			 allGameObjects.INSTANCE.cameraCursor.actionDown(me, fb, left, top);
-//		 }
-//			return true;
-//		}
-//		if (me.getAction() == MotionEvent.ACTION_UP) {
-//			if(allGameObjects.INSTANCE.menumanager != null) {
-//				allGameObjects.INSTANCE.cameraCursor.actionUp(me, fb);
-//			}
-//			return true;
-//		}
-//		if (me.getAction() == MotionEvent.ACTION_MOVE) {
-//			if(allGameObjects.INSTANCE.menumanager != null) {
-//				allGameObjects.INSTANCE.cameraCursor.actionMove(me, fb, left, top);
-//			}
-//			return true;
-//		}
 
-//		try {
-//			Thread.sleep(15);
-//		} catch (Exception e) {
-//		}
+		allGameObjects.INSTANCE.processHandler.setSplatPos(me.getX() , me.getY());
+		
 		return super.onTouchEvent(me);
 	}
 
@@ -405,6 +384,7 @@ private class TapListener implements OnGestureListener, GestureDetector.OnDouble
 	@Override
 	public boolean onDown(MotionEvent e) {
 
+
 			// TODO Auto-generated method stub
 		return false;
 	}
@@ -428,6 +408,7 @@ private class TapListener implements OnGestureListener, GestureDetector.OnDouble
 	@Override
 	public void onShowPress(MotionEvent e) {
 		// TODO Auto-generated method stub
+		//allGameObjects.INSTANCE.processHandler.setSplatPos(e.getX() , e.getY());
 	}
 
 	@Override
@@ -442,7 +423,7 @@ private class TapListener implements OnGestureListener, GestureDetector.OnDouble
         int left = mGLView.getLeft();
         int top  =mGLView.getTop();
 
-		allGameObjects.INSTANCE.processHandler.setSplatPos(e.getX() , e.getY());
+		allGameObjects.INSTANCE.processHandler.switchView();
 		//allGameObjects.INSTANCE.cameraCursor.onDoubleTap(e,fb, left, top);
 		return false;
 	}
@@ -454,6 +435,7 @@ private class TapListener implements OnGestureListener, GestureDetector.OnDouble
 		//a/llGameObjects.INSTANCE.cameraCursor.onSingleTapConfirmed(e,fb, left, top);
 		//pauseAction();
         //cameraCursor.onDoubleTap(e,fb);
+		//allGameObjects.INSTANCE.processHandler.setSplatPos(e.getX() , e.getY());
 		return false;
 	}
 	@Override

@@ -24,6 +24,15 @@ public class PostProcessHandler {
 
 
 
+
+    public enum Viewtype {
+        VELOCITY, DENSITY, PRESSURE,DIVERGENCE
+    }
+
+
+
+    Viewtype viewtype = Viewtype.VELOCITY;
+
     TextureManager tm = TextureManager.getInstance();
 
 
@@ -190,6 +199,7 @@ public class PostProcessHandler {
         fb.display();
         swapDensity();
        // swapPressure();
+        //swapVelocities();
 
 
         fb.setRenderTarget(divergence);
@@ -319,6 +329,7 @@ public class PostProcessHandler {
         displayObj.setOrigin(new SimpleVector(0.01, 0, 0));
         displayObj.setShader(displayShader);
         displayObj.setTexture(DENSITY_TEXTURE_TAG);
+        viewtype = Viewtype.DENSITY;
         displayObj.setCulling(false);
         displayWorld.addObject(displayObj);
     }
@@ -511,6 +522,38 @@ public class PostProcessHandler {
         splatPos = new SimpleVector(x,y,0);
     }
 
+
+
+    public void switchView()
+    {
+
+        switch (viewtype)
+        {
+
+
+            case DENSITY:
+            displayObj.setTexture(DENSITY_TEXTURE_TAG);
+                viewtype = Viewtype.VELOCITY;
+            break;
+            case VELOCITY:
+            displayObj.setTexture(VELOCITY_TEXTURE_TAG);
+                viewtype = Viewtype.DIVERGENCE;
+            break;
+            case DIVERGENCE:
+            displayObj.setTexture(DIVERGENCE_TEXTURE_TAG);
+                viewtype = Viewtype.PRESSURE;
+            break;
+
+            case PRESSURE:
+            displayObj.setTexture(PRESSURE_TEXTURE_TAG);
+                viewtype = Viewtype.DENSITY;
+            break;
+
+        }
+
+
+
+    }
 
 
     private void swapVelocities()
