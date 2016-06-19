@@ -1,8 +1,8 @@
-precision highp float;
-attribute lowp vec3 position;
-varying  lowp vec2 v_texCoord;
+precision lowp float;
+attribute  vec3 position;
+varying   vec2 v_texCoord;
 attribute vec2 texture0;
-const lowp vec2 scale = vec2(0.5, 0.5);
+const  vec2 scale = vec2(0.5, 0.5);
 //varying lowp vec2 inversesize;
 
 void main() {

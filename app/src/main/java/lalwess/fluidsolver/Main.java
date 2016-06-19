@@ -135,10 +135,6 @@ public class Main extends Activity implements OnScaleGestureListener /*,Observer
 	}
 
 
-
-
-
-
 	@Override
 	protected void onPause() {
 		allGameObjects.INSTANCE.isActionPaused=true;
@@ -184,7 +180,7 @@ public class Main extends Activity implements OnScaleGestureListener /*,Observer
 
 
 		allGameObjects.INSTANCE.processHandler.setSplatPos(me.getX() , me.getY());
-		
+
 		return super.onTouchEvent(me);
 	}
 
@@ -196,100 +192,81 @@ public class Main extends Activity implements OnScaleGestureListener /*,Observer
 		private long time = System.currentTimeMillis();
 
 
-
 		public MyRenderer() {
-            Resources res = getResources();
+			Resources res = getResources();
 
 			//time = System.currentTimeMillis();
 			//font = new Texture(res.openRawResource(R.raw.numbers));
-		//	font.setMipmap(false);
+			//	font.setMipmap(false);
 		}
 
 		public void onSurfaceChanged(GL10 gl, int w, int h) {
 
 			if (fb != null) {
-			//	fb.dispose();
-				fb.resize(w,h);
+				//	fb.dispose();
+				fb.resize(w, h);
 			}
-           // else{
-				fb = new FrameBuffer(w, h);
-		//	}
+			// else{
+			fb = new FrameBuffer(w, h);
+			//	}
 
 
-
-
-
-
-          //  fb.setBlittingShader(EntityFactory.gameboy_shader);
+			//  fb.setBlittingShader(EntityFactory.gameboy_shader);
 
 			if (master == null) {
-				System.out.println("MASTER IS NULLLLL");
+			//	System.out.println("MASTER IS NULLLLL");
 				master = Main.this;
 
 
 				Resources res = getResources();
 				//allGameObjects.INSTANCE.gameeventmanager.mainSetup(res,w,h,fb);
-				allGameObjects.INSTANCE.processHandler = new PostProcessHandler(res,fb);
+				allGameObjects.INSTANCE.processHandler = new PostProcessHandler(res, fb);
 
-			   
-			   current = System.currentTimeMillis();
-			   lag = 0;
-			   previous = System.currentTimeMillis();
+
+				current = System.currentTimeMillis();
+				lag = 0;
+				previous = System.currentTimeMillis();
 
 				//allGameObjects.INSTANCE.gameeventmanager.mainMenu();
 
 
-
 				MemoryHelper.compact();
 				//Main.allGameObjects.INSTANCE.world.compileAllObjects();
-
 			}
 
 		}
 
-
 		public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 
-			Logger.log("onSurfaceCreated");
+		//	Logger.log("onSurfaceCreated");
 		}
 
 
 		public void onDrawFrame(GL10 gl) {
 
-			//allGameObjects.INSTANCE.cameraCursor.setOrbit();
- 			//allGameObjects.INSTANCE.menumanager.update(); // updates ui
 
-			if(!allGameObjects.INSTANCE.isActionPaused)
-			{
+			if (!allGameObjects.INSTANCE.isActionPaused) {
 				current = System.currentTimeMillis();
 				elapsed = current - previous;
-				allGameObjects.INSTANCE.runningTime+= elapsed;
-				allGameObjects.INSTANCE.runningTimeSeconds = (int) (allGameObjects.INSTANCE.runningTime* 0.001) ;
+				allGameObjects.INSTANCE.runningTime += elapsed;
+				allGameObjects.INSTANCE.runningTimeSeconds = (int) (allGameObjects.INSTANCE.runningTime * 0.001);
 				previous = current;
 				lag += elapsed;
 
 
-				while (lag >= MS_PER_UPDATE){
-					//allGameObjects.INSTANCE.factoryObserver.additions();
-					//physics.update(lag);
-					//updateLoop.updateEntities((lag)/1000.0f);
-					//allGameObjects.INSTANCE.colldec.collisionDetection();
+				while (lag >= MS_PER_UPDATE) {
+
 					lag -= MS_PER_UPDATE;
 				}
-			}
-			else
-			{
-				
-			 lag = 0;
-			 previous= System.currentTimeMillis();
-			 current = System.currentTimeMillis();
+			} else {
+
+				lag = 0;
+				previous = System.currentTimeMillis();
+				current = System.currentTimeMillis();
 			}
 
 			allGameObjects.INSTANCE.processHandler.Process(fb);
 
-		//	blitNumber(lfps, 5, 5);
-			
-		//	fb.display();
 
 			if (System.currentTimeMillis() - time >= 1000) {
 				lfps = fps;
@@ -298,24 +275,7 @@ public class Main extends Activity implements OnScaleGestureListener /*,Observer
 			}
 			fps++;
 		}
-
-
-
-//		private void blitNumber(int number, int x, int y) {
-//			if (font != null) {
-//				String sNum = Integer.toString(number);
-//
-//				for (int i = 0; i < sNum.length(); i++) {
-//					char cNum = sNum.charAt(i);
-//					int iNum = cNum - 48;
-//					fb.blit(font, iNum * 5, 0, x, y, 5, 9, 5, 9, 10, true, null);
-//
-//					x += 5;
-//				}
-//			}
-//		}
 	}
-
 
 
 

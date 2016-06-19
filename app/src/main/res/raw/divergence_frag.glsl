@@ -1,21 +1,21 @@
-
-uniform lowp sampler2D textureUnit0;//Velocity
-uniform lowp sampler2D textureUnit1;//Obstacles
-uniform lowp float HalfInverseCellSize;
-varying  lowp vec2 v_texCoord;
+precision lowp float;
+uniform  sampler2D textureUnit0;//Velocity
+uniform  sampler2D textureUnit1;//Obstacles
+uniform  float HalfInverseCellSize;
+varying   vec2 v_texCoord;
 
 
 void main()
 {
-    lowp vec2 T = v_texCoord.xy;
+     vec2 T = v_texCoord.xy;
 
 
 
     // Find neighboring velocities:
-    lowp vec2 vN = texture2D(textureUnit0, T +vec2(0, 1)).xy;
-    lowp vec2 vS = texture2D(textureUnit0, T +vec2(0, -1)).xy;
-    lowp vec2 vE = texture2D(textureUnit0, T +vec2(1, 0)).xy;
-    lowp vec2 vW = texture2D(textureUnit0, T +vec2(-1, 0)).xy;
+     vec2 vN = texture2D(textureUnit0, T +vec2(0, 1)).xy;
+     vec2 vS = texture2D(textureUnit0, T +vec2(0, -1)).xy;
+     vec2 vE = texture2D(textureUnit0, T +vec2(1, 0)).xy;
+     vec2 vW = texture2D(textureUnit0, T +vec2(-1, 0)).xy;
 
     // Find neighboring obstacles:
   //  vec3 oN = texelFetchOffset(textureUnit1, T, 0, ivec2(0, 1)).xyz;
@@ -31,7 +31,7 @@ void main()
 
    // gl_FragColor = HalfInverseCellSize * (vE.x - vW.x + vN.y - vS.y);
 
-       lowp float fin = HalfInverseCellSize * (vE.x - vW.x + vN.y - vS.y);
+        float fin = HalfInverseCellSize * (vE.x - vW.x + vN.y - vS.y);
 
     gl_FragColor = vec4(fin,fin,fin,1);
 }

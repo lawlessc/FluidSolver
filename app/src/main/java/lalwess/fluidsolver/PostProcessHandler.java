@@ -19,11 +19,6 @@ public class PostProcessHandler {
 
     public NPOTTexture outPutTexture = null; //if not a null we output texture to this.
 
-     World FillWorld;
-     Camera fillcam = null;
-
-
-
 
     public enum Viewtype {
         VELOCITY, DENSITY, PRESSURE,DIVERGENCE
@@ -44,7 +39,7 @@ public class PostProcessHandler {
     Boolean textureCompression= true;
     Boolean textureFiltering= true;
     Boolean textureMipMap= false;
-    Boolean firstRun = true;
+    //Boolean firstRun = true;
 
 
 
@@ -88,12 +83,12 @@ public class PostProcessHandler {
     public NPOTTexture velocity;//VECLOCITY IF FOR ADVECTING
     public NPOTTexture velocity2;//VECLOCITY IF FOR ADVECTING
     public NPOTTexture density;
-    public NPOTTexture density2;
+   // public NPOTTexture density2;
     public NPOTTexture pressure;
-    public NPOTTexture pressure2;
+  //  public NPOTTexture pressure2;
     //    public NPOTTexture diffusion;
     public NPOTTexture divergence;
-    public NPOTTexture divergence2;
+  //  public NPOTTexture divergence2;
 
     public NPOTTexture Temp;
    // public NPOTTexture vorticity;
@@ -157,6 +152,15 @@ public class PostProcessHandler {
      splatPos    =  new SimpleVector(  fb.getWidth() / 2.0f, fb.getWidth() /2.0f , 0);
      setupTextureInfos();
      setupObjects();
+
+
+     AdvectingWorld.compileAllObjects();
+     advectDensityWorld.compileAllObjects();
+     ImpulseWorld.compileAllObjects();
+     divergenceWorld.compileAllObjects();
+     jacobiWorld.compileAllObjects();
+     SubtractGradientWorld.compileAllObjects();
+     displayWorld.compileAllObjects();
     }
 
 
@@ -180,26 +184,24 @@ public class PostProcessHandler {
         AdvectingWorld.renderScene(fb);
         AdvectingWorld.draw(fb);
         fb.display();
-        swapVelocities();
-
 
         fb.setRenderTarget(density);
         fb.clear();
         advectDensityWorld.renderScene(fb);
         advectDensityWorld.draw(fb);
         fb.display();
-        swapDensity();
 
+//        fb.setRenderTarget(velocity);
+//        fb.clear();
+//        ImpulseWorld.renderScene(fb);
+//        ImpulseWorld.draw(fb);
+//        fb.display();
 
-//       //IMPULSE is applied to density normally
         fb.setRenderTarget(density);
         fb.clear();
         ImpulseWorld.renderScene(fb);
         ImpulseWorld.draw(fb);
         fb.display();
-        swapDensity();
-       // swapPressure();
-        //swapVelocities();
 
 
         fb.setRenderTarget(divergence);
@@ -209,30 +211,29 @@ public class PostProcessHandler {
         fb.display();
 
 
-        //WE Clear Pressure
         fb.setRenderTarget(pressure);
         fb.clear();
         fb.display();
-        swapPressure();
+
 
         for(int i =1 ; i < JACOBI_ITERATIONS+1 ; i ++)
         {
+
 
             fb.setRenderTarget(pressure);
             fb.clear();
             jacobiWorld.renderScene(fb);
             jacobiWorld.draw(fb);
             fb.display();
-            swapPressure();
+
         }
 
 
-       fb.setRenderTarget(velocity2);
+       fb.setRenderTarget(velocity);
        fb.clear();
        SubtractGradientWorld.renderScene(fb);
        SubtractGradientWorld.draw(fb);
        fb.display();
-       swapVelocities();
 
         //DISPLAY -
         if(outPutTexture == null) {
@@ -251,15 +252,6 @@ public class PostProcessHandler {
             fb.display();
         }
 
-
-    }
-
-    //have this rotate through textures to see what is going on.
-    public void rotateDisplayTexture()
-    {
-
-
-       // displayObj.setTexture(DENSITY_TEXTURE_TAG);
 
     }
 
@@ -328,8 +320,8 @@ public class PostProcessHandler {
         displayObj = Primitives.getPlane(4,10);
         displayObj.setOrigin(new SimpleVector(0.01, 0, 0));
         displayObj.setShader(displayShader);
-        displayObj.setTexture(DENSITY_TEXTURE_TAG);
-        viewtype = Viewtype.DENSITY;
+        displayObj.setTexture(VELOCITY_TEXTURE_TAG);
+        viewtype = Viewtype.VELOCITY;
         displayObj.setCulling(false);
         displayWorld.addObject(displayObj);
     }
@@ -339,18 +331,11 @@ public class PostProcessHandler {
 
     public void setupTextures(int w, int h)
     {
-        velocity = new NPOTTexture(w , h, RGBColor.BLACK);
+        velocity = new NPOTTexture(w , h, RGBColor.RED);
         velocity.setFiltering(textureFiltering);
         velocity.setMipmap(textureMipMap);
         velocity.setTextureCompression(textureCompression);// texture compression eliminates the artifacts
         tm.addTexture(VELOCITY_TEXTURE_TAG, velocity);
-
-        velocity2 = new NPOTTexture(w , h, RGBColor.BLACK);
-        velocity2.setFiltering(textureFiltering);
-        velocity2.setMipmap(textureMipMap);
-        velocity2.setTextureCompression(textureCompression);// texture compression eliminates the artifacts
-        //tm.addTexture(VELOCITY_TEXTURE_TAG, velocity);
-
 
         pressure = new NPOTTexture(w , h, RGBColor.BLACK);
         pressure.setFiltering(textureFiltering);
@@ -358,26 +343,11 @@ public class PostProcessHandler {
         pressure.setTextureCompression(textureCompression);// texture compression eliminates the artifacts
         tm.addTexture(PRESSURE_TEXTURE_TAG, pressure);
 
-        pressure2 = new NPOTTexture(w , h, RGBColor.BLACK);
-        pressure2.setFiltering(textureFiltering);
-        pressure2.setMipmap(textureMipMap);
-        pressure2.setTextureCompression(textureCompression);// texture compression eliminates the artifacts
-        //tm.addTexture("pressure", pressure);
-
-
-
         divergence = new NPOTTexture(w , h, RGBColor.BLACK);
         divergence.setFiltering(textureFiltering);
         divergence.setMipmap(textureMipMap);
         divergence.setTextureCompression(textureCompression);// texture compression eliminates the artifacts
         tm.addTexture(DIVERGENCE_TEXTURE_TAG, divergence);
-
-        divergence2 = new NPOTTexture(w , h, RGBColor.BLACK);
-        divergence2.setFiltering(textureFiltering);
-        divergence2.setMipmap(textureMipMap);
-        divergence2.setTextureCompression(textureCompression);// texture compression eliminates the artifacts
-        //tm.addTexture("divergence", divergence);
-
 
         density = new NPOTTexture(w , h, RGBColor.BLACK);
         density.setFiltering(textureFiltering);
@@ -385,37 +355,20 @@ public class PostProcessHandler {
         density.setTextureCompression(textureCompression);
         tm.addTexture(DENSITY_TEXTURE_TAG, density);
 
-        density2 = new NPOTTexture(w , h, RGBColor.BLACK);
-        density2.setFiltering(textureFiltering);
-        density2.setMipmap(textureMipMap);
-        density2.setTextureCompression(textureCompression);
-       // tm.addTexture(DENSITY_TEXTURE_TAG, density);
-
-
     }
 
     public void setUpCameras()
     {
-
-        FillWorld = new World();
-        fillcam= FillWorld.getCamera();
-        fillcam.setPosition(-10, 0, 0);
-        fillcam.lookAt(new SimpleVector(0, 0, 0));
-
-
-
 
         AdvectingWorld = new World();
         camb=AdvectingWorld.getCamera();
         camb.setPosition(-10, 0, 0);
         camb.lookAt(new SimpleVector(0, 0, 0));
 
-
         advectDensityWorld= new World();
         camden = advectDensityWorld.getCamera();
         camden.setPosition(-10, 0, 0);
         camden.lookAt(new SimpleVector(0, 0, 0));
-
 
         ImpulseWorld = new World();
         impulseCam= ImpulseWorld.getCamera();
@@ -428,19 +381,15 @@ public class PostProcessHandler {
         camd.lookAt(new SimpleVector(0, 0, 0));
 
 
-
         jacobiWorld = new World();
         camf=jacobiWorld.getCamera();
         camf.setPosition(-10, 0, 0);
         camf.lookAt(new SimpleVector(0, 0, 0));
 
-
-
         SubtractGradientWorld = new World();
         subGradientCam=SubtractGradientWorld.getCamera();
         subGradientCam.setPosition(-10, 0, 0);
         subGradientCam.lookAt(new SimpleVector(0, 0, 0));
-
 
         displayWorld = new World();
         displayCam=displayWorld.getCamera();
@@ -455,34 +404,27 @@ public class PostProcessHandler {
       //  fillingShader =  new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.fill_frag)));
         advectingShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.advect_frag)));
 
-
-
         divergenceShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.divergence_frag)));
         impulseShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.splat_frag)));
         jacobiShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.jacobi_frag)));
 
-
         subGradientShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.subtract_frag)));
         //subtractingShader =  new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.subtract_frag)));;
 
-
         //boundaryShader = new GLSLShader(Loader.loadTextFile(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.boundary)));
-
 
         displayShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.rendering_frag)));
     }
 
     public void setupTextureInfos() {
-
         advecting_ti   =  new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
         advecting_ti.add(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG), TextureInfo.MODE_ADD);
 
         advectdensity_ti =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
         advectdensity_ti.add(TextureManager.getInstance().getTextureID(DENSITY_TEXTURE_TAG), TextureInfo.MODE_ADD);
 
-        impulse_ti=new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
+        impulse_ti=new TextureInfo(TextureManager.getInstance().getTextureID(DENSITY_TEXTURE_TAG));
 
-      //  adding_ti=new TextureInfo(TextureManager.getInstance().getTextureID("processingTexture"));
 
         divergence_ti=new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
 
@@ -498,22 +440,10 @@ public class PostProcessHandler {
     {
 
         this.outPutTexture = outPutTexture;
-        InverseSize = new SimpleVector(1.0f/ outPutTexture.getWidth() ,1.0f/ outPutTexture.getHeight() ,0);
+       InverseSize = new SimpleVector(1.0f/ outPutTexture.getWidth() ,1.0f/ outPutTexture.getHeight() ,0);
     }
 
 
-//    private void swapTextures(FrameBuffer fb,String name,Texture one ,Texture two ) {
-//
-//        if (textSwitch) {
-//            tm.replaceTexture(name, two);
-//            fb.setRenderTarget(one);
-//        } else {
-//
-//            tm.replaceTexture(name, one);
-//            fb.setRenderTarget(two);
-//        }
-//
-//    }
 
     public void setSplatPos(float x , float y)
     {
@@ -526,73 +456,27 @@ public class PostProcessHandler {
 
     public void switchView()
     {
-
         switch (viewtype)
         {
-
-
             case DENSITY:
-            displayObj.setTexture(DENSITY_TEXTURE_TAG);
+                displayObj.setTexture(DENSITY_TEXTURE_TAG);
                 viewtype = Viewtype.VELOCITY;
-            break;
+                break;
             case VELOCITY:
-            displayObj.setTexture(VELOCITY_TEXTURE_TAG);
+                displayObj.setTexture(VELOCITY_TEXTURE_TAG);
                 viewtype = Viewtype.DIVERGENCE;
-            break;
+                break;
             case DIVERGENCE:
-            displayObj.setTexture(DIVERGENCE_TEXTURE_TAG);
+                displayObj.setTexture(DIVERGENCE_TEXTURE_TAG);
                 viewtype = Viewtype.PRESSURE;
-            break;
+                break;
 
             case PRESSURE:
-            displayObj.setTexture(PRESSURE_TEXTURE_TAG);
+                displayObj.setTexture(PRESSURE_TEXTURE_TAG);
                 viewtype = Viewtype.DENSITY;
-            break;
-
+                break;
         }
-
-
-
     }
-
-
-    private void swapVelocities()
-    {
-        Temp = velocity ;
-        velocity=velocity2;
-        velocity2=Temp;
-        tm.replaceTexture(VELOCITY_TEXTURE_TAG, velocity2);
-    }
-
-    private void swapDensity()
-    {
-        Temp = density ;
-        density=density2;
-        density2=Temp;
-        tm.replaceTexture(DENSITY_TEXTURE_TAG, density2);
-    }
-
-
-    private void swapPressure()
-    {
-
-        Temp = pressure ;
-        pressure=pressure2;
-        pressure2=Temp;
-        tm.replaceTexture(PRESSURE_TEXTURE_TAG, pressure2);
-    }
-
-//    private void swapDivergence(FrameBuffer fb)
-//    {
-//
-//        Temp = divergence ;
-//        divergence=divergence2;
-//        divergence2=Temp;
-//
-//        tm.replaceTexture("divergence", divergence2);
-//        fb.setRenderTarget(divergence);
-//
-//    }
 
 
 
