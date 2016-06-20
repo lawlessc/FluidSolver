@@ -37,12 +37,9 @@ public class Main extends Activity implements OnScaleGestureListener /*,Observer
 	private static Main master = null;
 	private GLSurfaceView mGLView;
 	private MyRenderer renderer = null;
-	//private final MyRenderer renderer = new MyRenderer();
 	private FrameBuffer fb = null;
-	//private RGBColor back = new RGBColor(90, 50, 100);
 
 	private boolean useRetroRender = false;
-
 	public enum allGameObjects {
         INSTANCE;
 
@@ -193,7 +190,7 @@ public class Main extends Activity implements OnScaleGestureListener /*,Observer
 
 
 		public MyRenderer() {
-			Resources res = getResources();
+		//	Resources res = getResources();
 
 			//time = System.currentTimeMillis();
 			//font = new Texture(res.openRawResource(R.raw.numbers));

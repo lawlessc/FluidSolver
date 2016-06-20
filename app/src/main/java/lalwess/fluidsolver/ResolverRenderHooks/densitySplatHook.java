@@ -12,15 +12,14 @@ import lalwess.fluidsolver.PostProcessHandler;
  *
  * Basically so i can tap the screen
  */
-public class ImpulseHook implements IRenderHook {
-
+public class DensitySplatHook implements IRenderHook {
 
     PostProcessHandler parent;
     GLSLShader impulse;
-    SimpleVector fillcol = new SimpleVector(0.9,0.9,0);
+    SimpleVector fillcol = new SimpleVector(1,0.5,0);
 
 
-    public ImpulseHook(PostProcessHandler parent , GLSLShader impulse)
+    public DensitySplatHook(PostProcessHandler parent , GLSLShader impulse)
     {
         this.parent=parent;
         this.impulse =impulse;
@@ -32,8 +31,6 @@ public class ImpulseHook implements IRenderHook {
         impulse.setStaticUniform("Point", parent.splatPos);
         impulse.setStaticUniform("Radius", parent.splatRadius);
         impulse.setStaticUniform("FillColor", fillcol);
-
-
     }
 
     @Override

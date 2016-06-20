@@ -6,9 +6,11 @@ uniform  sampler2D textureUnit1;//Divergence
 uniform   float Alpha;
 uniform   float InverseBeta;
 
+varying  vec2 v_texCoord;
+
 void main()
 {
-     vec2 T = vec2(gl_FragCoord.xy);
+     vec2 T =  v_texCoord; // vec2(gl_FragCoord.xy);
 
     // Find neighboring pressure:
      vec4 pN = texture2D(textureUnit0, T +vec2(0, 1));

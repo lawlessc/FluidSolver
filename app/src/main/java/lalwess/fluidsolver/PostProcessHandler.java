@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import com.threed.jpct.*;
 
 import lalwess.fluidsolver.ResolverRenderHooks.AdvectionHook;
+import lalwess.fluidsolver.ResolverRenderHooks.DensitySplatHook;
 import lalwess.fluidsolver.ResolverRenderHooks.DivergenceHook;
 import lalwess.fluidsolver.ResolverRenderHooks.ImpulseHook;
 import lalwess.fluidsolver.ResolverRenderHooks.JacobiRenderHook;
@@ -30,17 +31,9 @@ public class PostProcessHandler {
 
     TextureManager tm = TextureManager.getInstance();
 
-
-    //TextureInfo adding_ti;
-
-
-
-
     Boolean textureCompression= true;
     Boolean textureFiltering= true;
     Boolean textureMipMap= false;
-    //Boolean firstRun = true;
-
 
 
     String VELOCITY_TEXTURE_TAG= "velocity";
@@ -55,7 +48,7 @@ public class PostProcessHandler {
     public float DISSIPATION = 0.99f;
     public float VELOCITY_DISSIPATION =0.99f;
 
-    public int JACOBI_ITERATIONS =20;
+    public int JACOBI_ITERATIONS =40;
 
     public float EPSILON =2.4414e-4f;
     public float CURL = 0.3f;
@@ -79,18 +72,16 @@ public class PostProcessHandler {
     public JacobiRenderHook jacobiRenderHook = null;
     public SubtractHook subtractHook = null;
     public ImpulseHook impulseHook = null;
+    public DensitySplatHook densitySplatHook= null;
 
     public NPOTTexture velocity;//VECLOCITY IF FOR ADVECTING
-    public NPOTTexture velocity2;//VECLOCITY IF FOR ADVECTING
     public NPOTTexture density;
-   // public NPOTTexture density2;
     public NPOTTexture pressure;
-  //  public NPOTTexture pressure2;
     //    public NPOTTexture diffusion;
     public NPOTTexture divergence;
-  //  public NPOTTexture divergence2;
 
-    public NPOTTexture Temp;
+
+  //  public NPOTTexture Temp;
    // public NPOTTexture vorticity;
 
 
@@ -106,11 +97,19 @@ public class PostProcessHandler {
     TextureInfo advectdensity_ti= null;
     Object3D  advectDensity = null;
 
-    World ImpulseWorld;
+    World AddDensity;
+    Camera addDensity = null;
+    TextureInfo density_ti = null;
+    GLSLShader densityShader = null;
+    Object3D densityObj = null;
+
+//
+    World impulseWorld;
     Camera impulseCam = null;
     TextureInfo impulse_ti= null;
     GLSLShader impulseShader = null;
     Object3D impulseObj = null;
+
 
     World divergenceWorld;
     Camera camd = null;
@@ -125,7 +124,6 @@ public class PostProcessHandler {
     Object3D  jacobiObj;
     GLSLShader jacobiShader = null;
 
-
     //Gradient Subtraction, pressure subtracted from velocity
     World SubtractGradientWorld;
     Camera subGradientCam = null;
@@ -133,12 +131,10 @@ public class PostProcessHandler {
     GLSLShader subGradientShader = null;
     Object3D subGradientObj = null;
 
-
     public World displayWorld;
     public Camera displayCam = null;
     public GLSLShader displayShader = null;
     public Object3D displayObj = null;
-
 
 
 
@@ -156,7 +152,8 @@ public class PostProcessHandler {
 
      AdvectingWorld.compileAllObjects();
      advectDensityWorld.compileAllObjects();
-     ImpulseWorld.compileAllObjects();
+     AddDensity.compileAllObjects();
+     impulseWorld.compileAllObjects();
      divergenceWorld.compileAllObjects();
      jacobiWorld.compileAllObjects();
      SubtractGradientWorld.compileAllObjects();
@@ -191,16 +188,19 @@ public class PostProcessHandler {
         advectDensityWorld.draw(fb);
         fb.display();
 
-//        fb.setRenderTarget(velocity);
-//        fb.clear();
-//        ImpulseWorld.renderScene(fb);
-//        ImpulseWorld.draw(fb);
-//        fb.display();
+
 
         fb.setRenderTarget(density);
         fb.clear();
-        ImpulseWorld.renderScene(fb);
-        ImpulseWorld.draw(fb);
+        AddDensity.renderScene(fb);
+        AddDensity.draw(fb);
+        fb.display();
+
+
+        fb.setRenderTarget(velocity);
+        fb.clear();
+        impulseWorld.renderScene(fb);
+        impulseWorld.draw(fb);
         fb.display();
 
 
@@ -278,14 +278,27 @@ public class PostProcessHandler {
         advectDensity.setTexture(advectdensity_ti);
         advectDensityWorld.addObject(advectDensity);
 
+        densityObj = Primitives.getPlane(4,10);
+        densityObj.setOrigin(new SimpleVector(0.01, 0, 0));
+        densitySplatHook = new DensitySplatHook(this, densityShader);
+        densityObj.setCulling(false);
+        densityObj.setShader(densityShader);
+        densityObj.setRenderHook(densitySplatHook);
+        densityObj.setTexture(density_ti);
+        AddDensity.addObject(densityObj);
+
+
+
         impulseObj = Primitives.getPlane(4,10);
         impulseObj.setOrigin(new SimpleVector(0.01, 0, 0));
-        impulseHook = new ImpulseHook(this,impulseShader);
+        impulseHook = new ImpulseHook(this, impulseShader);
         impulseObj.setCulling(false);
         impulseObj.setShader(impulseShader);
         impulseObj.setRenderHook(impulseHook);
         impulseObj.setTexture(impulse_ti);
-        ImpulseWorld.addObject(impulseObj);
+        impulseWorld.addObject(impulseObj);
+
+
 
         divergenceObj = Primitives.getPlane(4,10);
         divergenceObj.setOrigin(new SimpleVector(0.01, 0, 0));
@@ -299,7 +312,7 @@ public class PostProcessHandler {
 
         jacobiObj = Primitives.getPlane(4,10);
         jacobiObj.setOrigin(new SimpleVector(0.01, 0, 0));
-        jacobiRenderHook = new JacobiRenderHook(this,divergenceShader);
+        jacobiRenderHook = new JacobiRenderHook(this,jacobiShader);
         jacobiObj.setCulling(false);
         jacobiObj.setShader(jacobiShader);
         jacobiObj.setRenderHook(jacobiRenderHook);
@@ -320,8 +333,10 @@ public class PostProcessHandler {
         displayObj = Primitives.getPlane(4,10);
         displayObj.setOrigin(new SimpleVector(0.01, 0, 0));
         displayObj.setShader(displayShader);
+
         displayObj.setTexture(VELOCITY_TEXTURE_TAG);
         viewtype = Viewtype.VELOCITY;
+
         displayObj.setCulling(false);
         displayWorld.addObject(displayObj);
     }
@@ -331,7 +346,7 @@ public class PostProcessHandler {
 
     public void setupTextures(int w, int h)
     {
-        velocity = new NPOTTexture(w , h, RGBColor.RED);
+        velocity = new NPOTTexture(w , h, new RGBColor(127,127,0));
         velocity.setFiltering(textureFiltering);
         velocity.setMipmap(textureMipMap);
         velocity.setTextureCompression(textureCompression);// texture compression eliminates the artifacts
@@ -370,10 +385,22 @@ public class PostProcessHandler {
         camden.setPosition(-10, 0, 0);
         camden.lookAt(new SimpleVector(0, 0, 0));
 
-        ImpulseWorld = new World();
-        impulseCam= ImpulseWorld.getCamera();
+        AddDensity = new World();
+        addDensity= AddDensity.getCamera();
+        addDensity.setPosition(-10, 0, 0);
+        addDensity.lookAt(new SimpleVector(0, 0, 0));
+
+
+        impulseWorld = new World();
+        impulseCam= impulseWorld.getCamera();
         impulseCam.setPosition(-10, 0, 0);
         impulseCam.lookAt(new SimpleVector(0, 0, 0));
+
+
+
+
+
+
 
         divergenceWorld = new World();
         camd=divergenceWorld.getCamera();
@@ -405,8 +432,12 @@ public class PostProcessHandler {
         advectingShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.advect_frag)));
 
         divergenceShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.divergence_frag)));
-        impulseShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.splat_frag)));
+        densityShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.splat_frag)));
         jacobiShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.jacobi_frag)));
+
+         impulseShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.velocity_splat_frag)));
+
+
 
         subGradientShader = new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.subtract_frag)));
         //subtractingShader =  new GLSLShader(vertexShader,Loader.loadTextFile(res.openRawResource(R.raw.subtract_frag)));;
@@ -420,10 +451,16 @@ public class PostProcessHandler {
         advecting_ti   =  new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
         advecting_ti.add(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG), TextureInfo.MODE_ADD);
 
+
+
         advectdensity_ti =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
         advectdensity_ti.add(TextureManager.getInstance().getTextureID(DENSITY_TEXTURE_TAG), TextureInfo.MODE_ADD);
 
-        impulse_ti=new TextureInfo(TextureManager.getInstance().getTextureID(DENSITY_TEXTURE_TAG));
+
+
+        density_ti =new TextureInfo(TextureManager.getInstance().getTextureID(DENSITY_TEXTURE_TAG));
+        impulse_ti =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
+
 
 
         divergence_ti=new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
