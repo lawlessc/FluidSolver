@@ -9,13 +9,16 @@ uniform  vec3 inversesize;
 varying  vec2 v_texCoord;
 void main()
 {
-     vec2  fragCoord = v_texCoord;
+    // vec2  fragCoord = v_texCoord;
+          vec2 fragCoord =   vec2(gl_FragCoord.xy);
     //float solid = texture(textureUnit2, inversesize.xy  * fragCoord).x;
     //if (solid > 0) {
      //   gl_FragColor = vec4(0);
     //}
                            //1.0 is inversesize
    vec2 u = texture2D(textureUnit0, inversesize.xy * fragCoord).xy;
+   u.x = (u.x*2.0)-1.0;
+   u.y = (u.y*2.0)-1.0;
    vec2 coord = inversesize.xy  * (fragCoord - timeStep * u);      //1.0 is inversesize
    gl_FragColor = dissipation * texture2D(textureUnit1, coord);
 }

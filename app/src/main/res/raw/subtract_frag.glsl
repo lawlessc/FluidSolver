@@ -4,9 +4,16 @@ uniform  sampler2D textureUnit1;//Pressure
 //uniform sampler2D Obstacles;
 uniform  float GradientScale;
 
+varying  vec2 v_texCoord;
+uniform  vec3 inversesize;
+
 void main()
 {
      vec2 T = vec2(gl_FragCoord.xy);
+     vec2 stepX = vec2(inversesize.x, 0);
+     vec2 stepY = vec2(0, inversesize.y);
+    //  vec2 T =  v_texCoord;
+
 
 //    highp vec3 oC = texelFetch(Obstacles, T, 0).xyz;
 //    if (oC.x > 0) {
@@ -15,10 +22,19 @@ void main()
 //    }
 
     // Find neighboring pressure:
-     float pN = texture2D(textureUnit1, T +vec2(0, 1)).r;
-     float pS = texture2D(textureUnit1, T+ vec2(0, -1)).r;
-     float pE = texture2D(textureUnit1, T+ vec2(1, 0)).r;
-     float pW = texture2D(textureUnit1, T+ vec2(-1, 0)).r;
+//     float pN = texture2D(textureUnit1, T +vec2(0, 1)).r;
+//     float pS = texture2D(textureUnit1, T+ vec2(0, -1)).r;
+//     float pE = texture2D(textureUnit1, T+ vec2(1, 0)).r;
+//     float pW = texture2D(textureUnit1, T+ vec2(-1, 0)).r;
+
+      float pN = texture2D(textureUnit1, T+ stepY).r;
+      float pS = texture2D(textureUnit1, T- stepY).r;
+      float pE = texture2D(textureUnit1, T+ stepX).r;
+      float pW = texture2D(textureUnit1, T- stepX).r;
+
+
+
+
     //highp float pC = texture2D(textureUnit1, T).r;
 
 //    // Find neighboring obstacles:

@@ -37,6 +37,8 @@ public class JacobiRenderHook  implements IRenderHook {
 
 
 
+        jacobi.setStaticUniform("inversesize", parent.InverseSize);
+
         jacobi.setStaticUniform("Alpha", parent.alpha);
      //   advection.setStaticUniform("InverseBeta", parent.CELLSIZE);
 

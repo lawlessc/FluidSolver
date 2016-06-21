@@ -31,6 +31,7 @@ public class DivergenceHook  implements IRenderHook {
     @Override
     public void beforeRendering(int i) {
         divergence.setStaticUniform("HalfInverseCellSize", parent.HALFCELL);
+        divergence.setStaticUniform("inversesize", parent.InverseSize);
     }
 
     @Override

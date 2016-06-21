@@ -17,16 +17,16 @@ public class SubtractHook  implements IRenderHook {
 
 
     PostProcessHandler parent;
-    GLSLShader advection;
+    GLSLShader subtraction;
 
 
 
 
 
-    public SubtractHook(PostProcessHandler parent , GLSLShader advection)
+    public SubtractHook(PostProcessHandler parent , GLSLShader subtraction)
     {
         this.parent=parent;
-        this.advection =advection;
+        this.subtraction =subtraction;
 
 
     }
@@ -38,6 +38,8 @@ public class SubtractHook  implements IRenderHook {
 
     @Override
     public void beforeRendering(int i) {
+
+        subtraction.setStaticUniform("inversesize", parent.InverseSize);
 
     }
 
