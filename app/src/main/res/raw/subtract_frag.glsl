@@ -26,7 +26,6 @@ void main()
 //     float pS = texture2D(textureUnit1, T+ vec2(0, -1)).r;
 //     float pE = texture2D(textureUnit1, T+ vec2(1, 0)).r;
 //     float pW = texture2D(textureUnit1, T+ vec2(-1, 0)).r;
-
       float pN = texture2D(textureUnit1, T+ stepY).r;
       float pS = texture2D(textureUnit1, T- stepY).r;
       float pE = texture2D(textureUnit1, T+ stepX).r;
@@ -44,8 +43,8 @@ void main()
 //    vec3 oW = texelFetchOffset(Obstacles, T, 0, ivec2(-1, 0)).xyz;
 
     // Use center pressure for solid cells:
-     vec2 obstV = vec2(0);
-     vec2 vMask = vec2(1);
+   //  vec2 obstV = vec2(0);
+   //  vec2 vMask = vec2(1);
 
    // if (oN.x > 0) { pN = pC; obstV.y = oN.z; vMask.y = 0; }
    // if (oS.x > 0) { pS = pC; obstV.y = oS.z; vMask.y = 0; }
@@ -56,9 +55,9 @@ void main()
      vec2 oldV = texture2D(textureUnit0, T).xy;
      vec2 grad =  vec2(pE - pW, pN - pS) * GradientScale;
      vec2 newV = oldV - grad;
+    // vec2 fin = (vMask * newV) + obstV;
+     vec2 fin = newV;
 
-     vec2 fin = (vMask * newV) + obstV;
-   // gl_FragColor = vec4(fin.x,fin.y,0,1);
      gl_FragColor = vec4(fin.xy,0,1);
-
+      // gl_FragColor = (vMask * newV) + obstV;
 }

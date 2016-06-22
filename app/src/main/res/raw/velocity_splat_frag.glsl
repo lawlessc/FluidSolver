@@ -14,7 +14,9 @@ void main()
         float a = (Radius - d) * 0.5;
         a = min(a, 1.0);
         //gl_FragColor = vec4(FillColor, a);
-           gl_FragColor = vec4(Point.xy- gl_FragCoord.xy,0, a);
+           gl_FragColor = vec4(((Point.xy- gl_FragCoord.xy)*2.0)-1.0,0, a);
+           // gl_FragColor = vec4(0.2,0,0, a);
+
     } else {
 
        gl_FragColor = texture2D(textureUnit0,v_texCoord);
