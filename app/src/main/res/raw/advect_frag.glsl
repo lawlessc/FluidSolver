@@ -34,12 +34,15 @@ void main()
     //}
                            //1.0 is inversesize
    vec2 u = texture2D(textureUnit0, inversesize.xy * fragCoord).xy;
-  // u.x = (u.x*2.0)-1.0;
+  u.x = (u.x*(-2.0))-1.0;
+  u.y = (u.y*(-2.0))-1.0;
   // u.y = (u.y*2.0)-1.0;
   //u = p -u;
    vec2 coord = inversesize.xy  * (fragCoord - timeStep * u);
+
+
    // coord.x= coord.x-(inversesize.x);
-    coord.y= coord.y+(inversesize.y);
+  //  coord.y= coord.y+(inversesize.y);
   //  coord = p -coord;
     //  coord.x = (coord.x*inversesize.x);//-inversesize.x;
    //   coord.y = (coord.y*inversesize.y);//-inversesize.y;
