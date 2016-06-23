@@ -57,6 +57,9 @@ public class PostProcessHandler {
     public float HALFCELL = 0.5f / CELLSIZE;
 
 
+    public float AspectRatio;
+
+
     public SimpleVector InverseSize = null;
     public float alpha = 0.05f;
     public float  InverseBeta = 0.1666f;
@@ -147,6 +150,7 @@ public class PostProcessHandler {
      InverseSize = new SimpleVector(1.0f/ fb.getWidth() ,1.0f/ fb.getHeight() ,0);
      splatRadius =   fb.getWidth() /8.0f;
      splatPos    =  new SimpleVector(  fb.getWidth() / 2.0f, fb.getWidth() /2.0f , 0);
+     AspectRatio = fb.getWidth()/fb.getHeight();
      setupTextureInfos();
      setupObjects();
 
@@ -233,11 +237,11 @@ public class PostProcessHandler {
         }
 
 
-       fb.setRenderTarget(velocity);
-       fb.clear();
-       SubtractGradientWorld.renderScene(fb);
-       SubtractGradientWorld.draw(fb);
-       fb.display();
+//       fb.setRenderTarget(velocity);
+//       fb.clear();
+//       SubtractGradientWorld.renderScene(fb);
+//       SubtractGradientWorld.draw(fb);
+//       fb.display();
 
         //DISPLAY -
         if(outPutTexture == null) {
@@ -350,7 +354,7 @@ public class PostProcessHandler {
 
     public void setupTextures(int w, int h)
     {
-        velocity = new NPOTTexture(w , h,RGBColor.BLACK );//new RGBColor(-127,-127,0));
+        velocity = new NPOTTexture(w , h,new RGBColor(127,127,0));
         velocity.setFiltering(textureFiltering);
         velocity.setMipmap(textureMipMap);
         velocity.setTextureCompression(textureCompression);// texture compression eliminates the artifacts

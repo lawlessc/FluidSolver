@@ -9,6 +9,8 @@ uniform  vec3 inversesize;
 
 void main()
 {
+
+
      vec2 T = vec2(gl_FragCoord.xy);
      vec2 stepX = vec2(inversesize.x, 0);
      vec2 stepY = vec2(0, inversesize.y);
