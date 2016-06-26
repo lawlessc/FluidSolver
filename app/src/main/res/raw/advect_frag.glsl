@@ -5,11 +5,11 @@ uniform sampler2D textureUnit1;//source texture
 uniform  float timeStep;
 uniform  float dissipation;
 uniform  vec3 inversesize;
-
+varying vec2 v_texCoord;
 
 void main()
 {
-    vec2  fragCoord = gl_FragCoord.xy;
+    vec2  fragCoord = v_texCoord.xy;
    //float solid = texture(textureUnit2, inversesize.xy  * fragCoord).x;
    //if (solid > 0) {
    //   gl_FragColor = vec4(0);
