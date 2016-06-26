@@ -35,7 +35,7 @@ public class JacobiRenderHook  implements IRenderHook {
     public void beforeRendering(int i) {
 
 
-        jacobi.setStaticUniform("aspectRatio", parent.AspectRatio);
+        //jacobi.setStaticUniform("aspectRatio", parent.AspectRatio);
 
         jacobi.setStaticUniform("inversesize", parent.InverseSize);
 

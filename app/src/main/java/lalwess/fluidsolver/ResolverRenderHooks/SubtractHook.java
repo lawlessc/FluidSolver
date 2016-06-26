@@ -39,7 +39,7 @@ public class SubtractHook  implements IRenderHook {
     @Override
     public void beforeRendering(int i) {
 
-        subtraction.setStaticUniform("aspectRatio", parent.AspectRatio);
+       // subtraction.setStaticUniform("aspectRatio", parent.AspectRatio);
         subtraction.setStaticUniform("inversesize", parent.InverseSize);
 
     }

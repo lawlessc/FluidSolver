@@ -2,7 +2,7 @@ precision lowp float;
 uniform  sampler2D textureUnit0;//Velocity
 //uniform  sampler2D textureUnit1;//Obstacles
 uniform  float HalfInverseCellSize;
-varying   vec2 v_texCoord;
+//varying   vec2 v_texCoord;
 uniform  vec3 inversesize;
 
 void main()
@@ -43,5 +43,5 @@ void main()
 
      float fin = HalfInverseCellSize * (vE.x - vW.x + vN.y - vS.y);
 
-    gl_FragColor = vec4(fin,fin,0,1);
+   // gl_FragColor = vec4(fin.xy,0,1);
 }

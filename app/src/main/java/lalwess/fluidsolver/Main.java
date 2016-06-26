@@ -112,8 +112,8 @@ public class Main extends Activity implements OnScaleGestureListener /*,Observer
 			Texture.defaultTo4bpp(true);
 			Texture.defaultToKeepPixels(true);
 			Config.maxTextureLayers = 4;
-			Config.maxPolysVisible = 5000;
-			Config.farPlane = 100;
+		//	Config.maxPolysVisible = 5000;
+		//	Config.farPlane = 100;
 			//Config.nearPlane = 0;
 		}
 
