@@ -9,7 +9,7 @@ varying vec2 v_texCoord;
 
 void main()
 {
-    vec2  fragCoord = v_texCoord.xy;
+   // vec2  fragCoord = v_texCoord.xy;
      vec2  fragCoord = gl_FragCoord.xy;
 
    //float solid = texture(textureUnit2, inversesize.xy  * fragCoord).x;
