@@ -77,7 +77,7 @@ public class Main extends Activity implements OnScaleGestureListener /*,Observer
 		//Logger.setLogLevel(Logger.);
 		//
 		//
-		Logger.setLogLevel(Logger.LL_VERBOSE);
+		Logger.setLogLevel(Logger.DEBUG);
 
 
 		//Context baseContext= this.getBaseContext();
@@ -112,6 +112,7 @@ public class Main extends Activity implements OnScaleGestureListener /*,Observer
 			Texture.defaultTo4bpp(true);
 			Texture.defaultToKeepPixels(true);
 			Config.maxTextureLayers = 4;
+			Config.unloadImmediately=true;
 		//	Config.maxPolysVisible = 5000;
 		//	Config.farPlane = 100;
 			//Config.nearPlane = 0;

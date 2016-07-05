@@ -20,8 +20,6 @@ public class AdvectionHook implements IRenderHook {
     {
         this.parent=parent;
         this.advection =advection;
-
-
     }
 
 
