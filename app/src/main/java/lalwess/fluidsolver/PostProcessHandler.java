@@ -182,8 +182,9 @@ public class PostProcessHandler {
         if(velocityswitch) {
 
             tm.replaceTexture(VELOCITY_TEXTURE_TAG,textureless);
-            advectdensity_tiTwo =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
-            advectdensity_tiTwo.add(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG), TextureInfo.MODE_ADD);
+            advecting_ti =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
+            advecting_ti.add(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG), TextureInfo.MODE_ADD);
+
 
             fb.setRenderTarget(velocity);
             advectingObjTwo.setVisibility(true);
@@ -193,8 +194,10 @@ public class PostProcessHandler {
             fb.display();
             advectingObjTwo.setVisibility(false);
             tm.replaceTexture(VELOCITY_TEXTURE_TAG,velocity);
-            advectdensity_tiTwo =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
-            advectdensity_tiTwo.add(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG), TextureInfo.MODE_ADD);
+            advecting_ti =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
+            advecting_ti.add(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG), TextureInfo.MODE_ADD);
+
+
 
         }
 
@@ -202,8 +205,10 @@ public class PostProcessHandler {
        else {
 
             tm.replaceTexture(VELOCITY_TEXTURE_TAG_TWO,textureless);
-            advectdensity_tiTwo =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG_TWO));
-            advectdensity_tiTwo.add(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG_TWO), TextureInfo.MODE_ADD);
+            advecting_tiTwo =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG_TWO));
+            advecting_tiTwo.add(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG_TWO), TextureInfo.MODE_ADD);
+
+
 
 
             fb.setRenderTarget(velocity2);
@@ -215,8 +220,9 @@ public class PostProcessHandler {
             advectingObj.setVisibility(false);
 
             tm.replaceTexture(VELOCITY_TEXTURE_TAG_TWO,velocity2);
-            advectdensity_tiTwo =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG_TWO));
-            advectdensity_tiTwo.add(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG_TWO), TextureInfo.MODE_ADD);
+            advecting_tiTwo =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG_TWO));
+            advecting_tiTwo.add(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG_TWO), TextureInfo.MODE_ADD);
+
         }
        // fb.sync();
 
@@ -241,11 +247,15 @@ public class PostProcessHandler {
             advectdensity_tiTwo =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG_TWO));
             advectdensity_tiTwo.add(TextureManager.getInstance().getTextureID(DENSITY_TEXTURE_TAG_TWO), TextureInfo.MODE_ADD);
 
+
+
         }else {
 
             tm.replaceTexture(DENSITY_TEXTURE_TAG,textureless);
-            advectdensity_tiTwo =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
-            advectdensity_tiTwo.add(TextureManager.getInstance().getTextureID(DENSITY_TEXTURE_TAG), TextureInfo.MODE_ADD);
+            advectdensity_ti =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
+            advectdensity_ti.add(TextureManager.getInstance().getTextureID(DENSITY_TEXTURE_TAG), TextureInfo.MODE_ADD);
+
+            tm.unloadTexture(fb,density);
 
             fb.setRenderTarget(density);
             DensityAdvectionTwo.setVisibility(true);
@@ -256,8 +266,9 @@ public class PostProcessHandler {
             DensityAdvectionTwo.setVisibility(false);
 
             tm.replaceTexture(DENSITY_TEXTURE_TAG,density);
-            advectdensity_tiTwo =new TextureInfo(TextureManager.getInstance().getTextureID(DENSITY_TEXTURE_TAG));
-            advectdensity_tiTwo.add(TextureManager.getInstance().getTextureID(DENSITY_TEXTURE_TAG), TextureInfo.MODE_ADD);
+            advectdensity_ti =new TextureInfo(TextureManager.getInstance().getTextureID(DENSITY_TEXTURE_TAG));
+            advectdensity_ti.add(TextureManager.getInstance().getTextureID(DENSITY_TEXTURE_TAG), TextureInfo.MODE_ADD);
+
 
         }
 
