@@ -23,9 +23,6 @@ vec2 mult;
         gl_FragColor = vec4(FillColor, a);
           // gl_FragColor = vec4(Point.xy- gl_FragCoord.xy,0, a);
     } else {
-
-
-
        gl_FragColor = texture2D(density,v_texCoord);
 
     }

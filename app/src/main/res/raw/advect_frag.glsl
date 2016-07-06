@@ -1,6 +1,6 @@
 precision lowp float;
 uniform sampler2D velocity;//Velocity
-uniform sampler2D textureUnit1;//source texture
+//uniform sampler2D textureUnit1;//source texture
                          //uniform sampler2D textureUnit2;//Obstacle Texture
 uniform  float timeStep;
 uniform  float dissipation;
@@ -21,5 +21,5 @@ void main()
   u.y = (u.y*(-2.0))-1.0;
 
    vec2 coord = inversesize.xy  * (fragCoord - timeStep * u);
-   gl_FragColor = dissipation * texture2D(textureUnit1, coord);
+   gl_FragColor = dissipation * texture2D(velocity, coord);
 }

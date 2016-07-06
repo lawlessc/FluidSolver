@@ -8,8 +8,6 @@ uniform  vec3 inversesize;
 varying vec2 v_texCoord;
 
 
-
-
 void main()
 {
    // vec2  fragCoord = v_texCoord.xy;

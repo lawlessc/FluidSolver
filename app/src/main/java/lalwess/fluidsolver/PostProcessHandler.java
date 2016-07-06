@@ -62,6 +62,16 @@ public class PostProcessHandler {
     public float splatRadius  = 0;
     public SimpleVector splatPos = null;
 
+
+    AdvectionHook  advectionHook;
+    AdvectionHook advectionHooktwo;
+
+    AdvectionHook  advectionHookForDensity;
+
+    AdvectionHook advectionHookForDensitytwo;
+
+
+
     //public float HalfInverseCellSize;
     public DivergenceHook divergenceHook=null;
     public JacobiRenderHook jacobiRenderHook = null;
@@ -86,6 +96,7 @@ public class PostProcessHandler {
 
     public TextureInfo advecting_ti= null;
     public TextureInfo advecting_tiTwo= null;
+
     public GLSLShader advectingShader;
     public Object3D  advectingObj = null;
     public Object3D  advectingObjTwo = null;
@@ -95,6 +106,7 @@ public class PostProcessHandler {
 ;
     public TextureInfo advectdensity_ti= null;
     public TextureInfo advectdensity_tiTwo= null;
+
     public GLSLShader advectingDensityShader;
     public Object3D DensityAdvection = null;
     public Object3D DensityAdvectionTwo = null;
@@ -181,58 +193,24 @@ public class PostProcessHandler {
 
         if(velocityswitch) {
 
-            tm.replaceTexture(VELOCITY_TEXTURE_TAG,textureless);
-            advecting_ti =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
-            advecting_ti.add(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG), TextureInfo.MODE_ADD);
 
+            advectingObj.setTexture("textureless");
+            DensityAdvectionTwo.setTexture("textureless");
 
             fb.setRenderTarget(velocity);
+
             advectingObjTwo.setVisibility(true);
             fb.clear();
             displayWorld.renderScene(fb);
             displayWorld.draw(fb);
             fb.display();
             advectingObjTwo.setVisibility(false);
-            tm.replaceTexture(VELOCITY_TEXTURE_TAG,velocity);
-            advecting_ti =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
-            advecting_ti.add(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG), TextureInfo.MODE_ADD);
 
 
-
-        }
-
-
-       else {
-
-            tm.replaceTexture(VELOCITY_TEXTURE_TAG_TWO,textureless);
-            advecting_tiTwo =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG_TWO));
-            advecting_tiTwo.add(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG_TWO), TextureInfo.MODE_ADD);
+            //advectingObj.setTexture(advecting_ti);
+            fb.sync();
 
 
-
-
-            fb.setRenderTarget(velocity2);
-            advectingObj.setVisibility(true);
-            fb.clear();
-            displayWorld.renderScene(fb);
-            displayWorld.draw(fb);
-            fb.display();
-            advectingObj.setVisibility(false);
-
-            tm.replaceTexture(VELOCITY_TEXTURE_TAG_TWO,velocity2);
-            advecting_tiTwo =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG_TWO));
-            advecting_tiTwo.add(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG_TWO), TextureInfo.MODE_ADD);
-
-        }
-       // fb.sync();
-
-
-
-        if(velocityswitch) {
-
-            tm.replaceTexture(DENSITY_TEXTURE_TAG_TWO,textureless);
-            advectdensity_tiTwo =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG_TWO));
-            advectdensity_tiTwo.add(TextureManager.getInstance().getTextureID(DENSITY_TEXTURE_TAG_TWO), TextureInfo.MODE_ADD);
 
 
             fb.setRenderTarget(density2);
@@ -243,19 +221,30 @@ public class PostProcessHandler {
             fb.display();
             DensityAdvection.setVisibility(false);
 
-            tm.replaceTexture(DENSITY_TEXTURE_TAG_TWO,density2);
-            advectdensity_tiTwo =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG_TWO));
-            advectdensity_tiTwo.add(TextureManager.getInstance().getTextureID(DENSITY_TEXTURE_TAG_TWO), TextureInfo.MODE_ADD);
+           // DensityAdvectionTwo.setTexture(advectdensity_tiTwo);
+            advectingObj.setTexture(VELOCITY_TEXTURE_TAG);
 
 
+        }
+       else
+        {
 
-        }else {
 
-            tm.replaceTexture(DENSITY_TEXTURE_TAG,textureless);
-            advectdensity_ti =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
-            advectdensity_ti.add(TextureManager.getInstance().getTextureID(DENSITY_TEXTURE_TAG), TextureInfo.MODE_ADD);
+            advectingObjTwo.setTexture("textureless");
+            DensityAdvection.setTexture("textureless");
 
-            tm.unloadTexture(fb,density);
+            fb.setRenderTarget(velocity2);
+            advectingObj.setVisibility(true);
+            fb.clear();
+            displayWorld.renderScene(fb);
+            displayWorld.draw(fb);
+            fb.display();
+            advectingObj.setVisibility(false);
+
+            ///advectingObjTwo.setTexture(advecting_tiTwo);
+            fb.sync();
+
+
 
             fb.setRenderTarget(density);
             DensityAdvectionTwo.setVisibility(true);
@@ -265,25 +254,28 @@ public class PostProcessHandler {
             fb.display();
             DensityAdvectionTwo.setVisibility(false);
 
-            tm.replaceTexture(DENSITY_TEXTURE_TAG,density);
-            advectdensity_ti =new TextureInfo(TextureManager.getInstance().getTextureID(DENSITY_TEXTURE_TAG));
-            advectdensity_ti.add(TextureManager.getInstance().getTextureID(DENSITY_TEXTURE_TAG), TextureInfo.MODE_ADD);
+           //DensityAdvection.setTexture(advectdensity_ti);
+            advectingObjTwo.setTexture(VELOCITY_TEXTURE_TAG_TWO);
 
 
         }
 
 
 
-
-
     //add new density from the splat
     //fb.setRenderTarget(density);//DENSITY IS ALREADY SET
+
+
     densityObj.setVisibility(true);
     fb.clear();
     displayWorld.renderScene(fb);
     displayWorld.draw(fb);
     fb.display();
     densityObj.setVisibility(false);
+
+
+    DensityAdvection.setTexture(advectdensity_ti);
+    DensityAdvectionTwo.setTexture(advectdensity_tiTwo);
 
     //add new velocity
     fb.setRenderTarget(velocity);
@@ -357,38 +349,41 @@ public class PostProcessHandler {
     public void setupObjects()
     {
 
+
+
+
         advectingObj = Primitives.getPlane(4,10);
         advectingObj.setOrigin(new SimpleVector(0.01, 0, 0));
-        AdvectionHook advectionHook = new AdvectionHook(this,advectingShader);
+        advectionHook = new AdvectionHook(this,advectingShader);
         advectingObj.setRenderHook(advectionHook);
         advectingObj.setShader(advectingShader);
-        advecting_ti   =  new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
-        advecting_ti.add(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG), TextureInfo.MODE_ADD);
-        advectingObj.setTexture(advecting_ti);
+       // advecting_ti  =  new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
+      //  advecting_ti.add(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG), TextureInfo.MODE_ADD);
+        advectingObj.setTexture(VELOCITY_TEXTURE_TAG);
         advectingObj.setCulling(false);
         advectingObj.compile();
-        advectingObj.strip();
+       // advectingObj.strip();
         displayWorld.addObject(advectingObj);
         advectingObj.setVisibility(false);
 
         advectingObjTwo = Primitives.getPlane(4,10);
         advectingObjTwo.setOrigin(new SimpleVector(0.01, 0, 0));
-        AdvectionHook advectionHooktwo = new AdvectionHook(this,advectingShader);
+        advectionHooktwo = new AdvectionHook(this,advectingShader);
         advectingObjTwo.setRenderHook(advectionHooktwo);
         advectingObjTwo.setShader(advectingShader);
-        advecting_tiTwo   =  new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG_TWO));
-        advecting_tiTwo.add(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG_TWO), TextureInfo.MODE_ADD);
-        advectingObjTwo.setTexture(advecting_tiTwo);
+       // advecting_tiTwo   =  new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG_TWO));
+       // advecting_tiTwo.add(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG_TWO), TextureInfo.MODE_ADD);
+        advectingObjTwo.setTexture(VELOCITY_TEXTURE_TAG_TWO);
         advectingObjTwo.setCulling(false);
         advectingObjTwo.compile();
-        advectingObjTwo.strip();
+        //advectingObjTwo.strip();
         displayWorld.addObject(advectingObjTwo);
         advectingObjTwo.setVisibility(false);
 
 
         DensityAdvection = Primitives.getPlane(4,10);
         DensityAdvection.setOrigin(new SimpleVector(0.001, 0, 0));
-        AdvectionHook advectionHookForDensity = new AdvectionHook(this,advectingDensityShader);
+        advectionHookForDensity = new AdvectionHook(this,advectingDensityShader);
         DensityAdvection.setRenderHook(advectionHookForDensity);
         DensityAdvection.setShader(advectingDensityShader);
         advectdensity_ti =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
@@ -396,13 +391,13 @@ public class PostProcessHandler {
         DensityAdvection.setTexture(advectdensity_ti);
         DensityAdvection.setCulling(false);
         DensityAdvection.compile();
-        DensityAdvection.strip();
+        //DensityAdvection.strip();
         displayWorld.addObject(DensityAdvection);
         DensityAdvection.setVisibility(false);
 
         DensityAdvectionTwo = Primitives.getPlane(4,10);
         DensityAdvectionTwo.setOrigin(new SimpleVector(0.001, 0, 0));
-        AdvectionHook advectionHookForDensitytwo = new AdvectionHook(this,advectingDensityShader);
+        advectionHookForDensitytwo = new AdvectionHook(this,advectingDensityShader);
         DensityAdvectionTwo.setRenderHook(advectionHookForDensitytwo);
         DensityAdvectionTwo.setShader(advectingDensityShader);
         advectdensity_tiTwo =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG_TWO));
@@ -410,7 +405,7 @@ public class PostProcessHandler {
         DensityAdvectionTwo.setTexture(advectdensity_tiTwo);
         DensityAdvectionTwo.setCulling(false);
         DensityAdvectionTwo.compile();
-        DensityAdvectionTwo.strip();
+     //   DensityAdvectionTwo.strip();
         displayWorld.addObject(DensityAdvectionTwo);
         DensityAdvectionTwo.setVisibility(false);
 
@@ -425,7 +420,7 @@ public class PostProcessHandler {
         densityObj.setTexture(density_ti);
         densityObj.setCulling(false);
         densityObj.compile();
-        densityObj.strip();
+     //   densityObj.strip();
         displayWorld.addObject(densityObj);
         densityObj.setVisibility(false);
 
@@ -438,7 +433,7 @@ public class PostProcessHandler {
         impulseObj.setTexture(impulse_ti);
         impulseObj.setCulling(false);
         impulseObj.compile();
-        impulseObj.strip();
+    //    impulseObj.strip();
         displayWorld.addObject(impulseObj);
         impulseObj.setVisibility(false);
 
@@ -451,7 +446,7 @@ public class PostProcessHandler {
         divergenceObj.setTexture(divergence_ti);
         divergenceObj.setCulling(false);
         divergenceObj.compile();
-        divergenceObj.strip();
+    //    divergenceObj.strip();
         displayWorld.addObject(divergenceObj);
         divergenceObj.setVisibility(false);
 
@@ -465,7 +460,7 @@ public class PostProcessHandler {
         jacobiObj.setTexture(jacobi_ti);
         jacobiObj.setCulling(false);
         jacobiObj.compile();
-        jacobiObj.strip();
+    //    jacobiObj.strip();
         displayWorld.addObject(jacobiObj);
         jacobiObj.setVisibility(false);
 
@@ -479,7 +474,7 @@ public class PostProcessHandler {
         subGradient_ti.add(TextureManager.getInstance().getTextureID(PRESSURE_TEXTURE_TAG), TextureInfo.MODE_ADD);
         subGradientObj.setTexture(subGradient_ti);
         subGradientObj.compile();
-        subGradientObj.strip();
+    //    subGradientObj.strip();
         displayWorld.addObject(subGradientObj);
         subGradientObj.setVisibility(false);
 
@@ -508,6 +503,7 @@ public class PostProcessHandler {
         textureless.setFiltering(false);
         textureless.setMipmap(false);
         textureless.setTextureCompression(textureCompression);// texture compression eliminates the artifacts
+        tm.addTexture("textureless", textureless);
 
 
 
