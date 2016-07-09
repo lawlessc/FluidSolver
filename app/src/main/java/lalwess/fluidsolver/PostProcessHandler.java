@@ -42,6 +42,8 @@ public class PostProcessHandler {
     String DIVERGENCE_TEXTURE_TAG= "divergence";
     String PRESSURE_TEXTURE_TAG= "pressure";
 
+    String ADDITIONAL_DENSITY_TAG="densitytoAdd";
+
     public float SCALE =1.0f;
     public float TIMESTEP  = 0.12f;//0.125f;
     public float DISSIPATION = 0.99f;
@@ -86,6 +88,8 @@ public class PostProcessHandler {
 
     public NPOTTexture density;
     public NPOTTexture density2;
+    public NPOTTexture add_density;
+
 
     public NPOTTexture pressure;
     public NPOTTexture divergence;
@@ -205,12 +209,16 @@ public class PostProcessHandler {
             displayWorld.draw(fb);
             fb.display();
             advectingObjTwo.setVisibility(false);
-
+            fb.removeRenderTarget();
 
             //advectingObj.setTexture(advecting_ti);
+
+
+            fb.setRenderTarget(textureless);
+            fb.clear();
+            fb.display();
             fb.sync();
-
-
+            fb.removeRenderTarget();
 
 
             fb.setRenderTarget(density2);
@@ -223,8 +231,8 @@ public class PostProcessHandler {
 
            // DensityAdvectionTwo.setTexture(advectdensity_tiTwo);
             advectingObj.setTexture(VELOCITY_TEXTURE_TAG);
-
-
+        //    fb.removeRenderTarget();
+            fb.setRenderTarget(density);
         }
        else
         {
@@ -241,10 +249,17 @@ public class PostProcessHandler {
             fb.display();
             advectingObj.setVisibility(false);
 
+
+            fb.removeRenderTarget();
             ///advectingObjTwo.setTexture(advecting_tiTwo);
             fb.sync();
+            fb.setRenderTarget(textureless);
+            fb.clear();
+            displayWorld.renderScene(fb);
+            displayWorld.draw(fb);
+            fb.display();
 
-
+            fb.removeRenderTarget();
 
             fb.setRenderTarget(density);
             DensityAdvectionTwo.setVisibility(true);
@@ -256,8 +271,8 @@ public class PostProcessHandler {
 
            //DensityAdvection.setTexture(advectdensity_ti);
             advectingObjTwo.setTexture(VELOCITY_TEXTURE_TAG_TWO);
-
-
+      //      fb.removeRenderTarget();
+            fb.setRenderTarget(density2);
         }
 
 
@@ -266,6 +281,7 @@ public class PostProcessHandler {
     //fb.setRenderTarget(density);//DENSITY IS ALREADY SET
 
 
+    fb.setRenderTarget(add_density);
     densityObj.setVisibility(true);
     fb.clear();
     displayWorld.renderScene(fb);
@@ -387,7 +403,8 @@ public class PostProcessHandler {
         DensityAdvection.setRenderHook(advectionHookForDensity);
         DensityAdvection.setShader(advectingDensityShader);
         advectdensity_ti =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG));
-        advectdensity_ti.add(TextureManager.getInstance().getTextureID(DENSITY_TEXTURE_TAG), TextureInfo.MODE_ADD);
+        advectdensity_ti.add(TextureManager.getInstance().getTextureID(DENSITY_TEXTURE_TAG), TextureInfo.MODE_ADD);//add_density
+        advectdensity_ti.add(TextureManager.getInstance().getTextureID(ADDITIONAL_DENSITY_TAG), TextureInfo.MODE_ADD);
         DensityAdvection.setTexture(advectdensity_ti);
         DensityAdvection.setCulling(false);
         DensityAdvection.compile();
@@ -533,6 +550,13 @@ public class PostProcessHandler {
         tm.addTexture(DENSITY_TEXTURE_TAG_TWO, density2);
 
 
+        add_density = new NPOTTexture(width , height, RGBColor.BLACK);
+        add_density.setFiltering(textureFiltering);
+        add_density.setMipmap(textureMipMap);
+        add_density.setTextureCompression(textureCompression);
+        tm.addTexture(ADDITIONAL_DENSITY_TAG, add_density);
+
+
         pressure = new NPOTTexture(width , height, RGBColor.BLACK);
         pressure.setFiltering(textureFiltering);
         pressure.setMipmap(textureMipMap);
@@ -622,6 +646,15 @@ public class PostProcessHandler {
     }
 
 
+
+
+
+    //
+    public void AddDensity()
+    {
+
+
+    }
 
 
 
