@@ -3,6 +3,7 @@ uniform  vec3 Point;
 uniform  float Radius;
 uniform  vec3 FillColor;
 uniform sampler2D density;//Previous DENSITY
+
 //uniform lowp vec3 FillColor;
 
 varying  vec2 v_texCoord;
