@@ -24,5 +24,8 @@ void main()
   u.y = (u.y*(-2.0))-1.0;
 
    vec2 coord = inversesize.xy  * (fragCoord - timeStep * u);
-   gl_FragColor = dissipation * (texture2D(textureUnit1, coord)   + texture2D(textureUnit2, coord) );
+
+
+
+   gl_FragColor = dissipation * ( texture2D(textureUnit1, coord) + texture2D(textureUnit2, coord)/2.0 );
 }
