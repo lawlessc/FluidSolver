@@ -2,7 +2,7 @@ precision lowp float;
 uniform  vec3 Point;
 uniform  float Radius;
 uniform  vec3 FillColor;
-uniform sampler2D density;//Previous DENSITY
+//uniform sampler2D density;//Previous DENSITY
 
 //uniform lowp vec3 FillColor;
 
@@ -24,7 +24,8 @@ vec2 mult;
         gl_FragColor = vec4(FillColor, a);
           // gl_FragColor = vec4(Point.xy- gl_FragCoord.xy,0, a);
     } else {
-       gl_FragColor = texture2D(density,v_texCoord);
+      // gl_FragColor = texture2D(density,v_texCoord);
+      gl_FragColor = vec4(0,0,0,1);
 
     }
 }

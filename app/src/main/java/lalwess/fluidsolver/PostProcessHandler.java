@@ -41,6 +41,7 @@ public class PostProcessHandler {
 
     String DIVERGENCE_TEXTURE_TAG= "divergence";
     String PRESSURE_TEXTURE_TAG= "pressure";
+    String PRESSURE_TEXTURE_TAG_TWO= "pressuretwo";
 
     String ADDITIONAL_DENSITY_TAG="densitytoAdd";
 
@@ -92,6 +93,8 @@ public class PostProcessHandler {
 
 
     public NPOTTexture pressure;
+    public NPOTTexture pressure2;
+
     public NPOTTexture divergence;
 
 
@@ -139,9 +142,9 @@ public class PostProcessHandler {
 
     //This step is carried out multiple times
     public TextureInfo jacobi_ti= null;
-   // public TextureInfo jacobi_tiTwo= null;
+    public TextureInfo jacobi_tiTwo= null;
     public Object3D  jacobiObj;
-   // public Object3D  jacobiObjTwo;
+    public Object3D  jacobiObjTwo;
     public GLSLShader jacobiShader = null;
 
 
@@ -233,6 +236,8 @@ public class PostProcessHandler {
             advectingObj.setTexture(VELOCITY_TEXTURE_TAG);
         //    fb.removeRenderTarget();
             fb.setRenderTarget(density);
+
+            DensityAdvectionTwo.setTexture(advectdensity_tiTwo);
         }
        else
         {
@@ -273,6 +278,10 @@ public class PostProcessHandler {
             advectingObjTwo.setTexture(VELOCITY_TEXTURE_TAG_TWO);
       //      fb.removeRenderTarget();
             fb.setRenderTarget(density2);
+
+            DensityAdvection.setTexture(advectdensity_ti);
+
+
         }
 
 
@@ -290,8 +299,6 @@ public class PostProcessHandler {
     densityObj.setVisibility(false);
 
 
-    DensityAdvection.setTexture(advectdensity_ti);
-    DensityAdvectionTwo.setTexture(advectdensity_tiTwo);
 
     //add new velocity
     fb.setRenderTarget(velocity);
@@ -317,23 +324,43 @@ public class PostProcessHandler {
     fb.display();
 
 
-//    for(int i =1 ; i < JACOBI_ITERATIONS+1 ; i ++)
-//    {
-//    fb.setRenderTarget(pressure);
-//    jacobiObj.setVisibility(true);
-//    fb.clear();
-//    displayWorld.renderScene(fb);
-//    displayWorld.draw(fb);
-//    fb.display();
-//    jacobiObj.setVisibility(false);
-//    }
+    boolean jabobiSwitch =true;
+    for(int i =1 ; i < JACOBI_ITERATIONS+1 ; i ++)
+    {
 
-//       fb.setRenderTarget(velocity);
-//       fb.clear();
-//       SubtractGradientWorld.renderScene(fb);
-//       SubtractGradientWorld.draw(fb);
-//       fb.display();
-     //  doAdvectDensity= true;
+     if(jabobiSwitch) {
+         fb.setRenderTarget(pressure2);
+         jacobiObj.setVisibility(true);
+         fb.clear();
+         displayWorld.renderScene(fb);
+         displayWorld.draw(fb);
+         fb.display();
+         jacobiObj.setVisibility(false);
+     }
+     else {
+         fb.setRenderTarget(pressure);
+         jacobiObj.setVisibility(true);
+         fb.clear();
+         displayWorld.renderScene(fb);
+         displayWorld.draw(fb);
+         fb.display();
+         jacobiObj.setVisibility(false);
+
+     }
+
+      jabobiSwitch ^=true;
+
+
+    }
+
+       fb.setRenderTarget(velocity);
+       subGradientObj.setVisibility(true);
+       fb.clear();
+       displayWorld.renderScene(fb);
+       displayWorld.draw(fb);
+       subGradientObj.setVisibility(false);
+       fb.display();
+
 
 
 
@@ -477,9 +504,22 @@ public class PostProcessHandler {
         jacobiObj.setTexture(jacobi_ti);
         jacobiObj.setCulling(false);
         jacobiObj.compile();
-    //    jacobiObj.strip();
         displayWorld.addObject(jacobiObj);
         jacobiObj.setVisibility(false);
+
+        jacobiObjTwo = Primitives.getPlane(4,10);
+        jacobiObjTwo.setOrigin(new SimpleVector(0.01, 0, 0));
+        jacobiRenderHook = new JacobiRenderHook(this,jacobiShader);
+        jacobiObjTwo.setShader(jacobiShader);
+        jacobiObjTwo.setRenderHook(jacobiRenderHook);
+        jacobi_tiTwo   =new TextureInfo(TextureManager.getInstance().getTextureID(PRESSURE_TEXTURE_TAG_TWO));
+        jacobi_tiTwo.add(TextureManager.getInstance().getTextureID(DIVERGENCE_TEXTURE_TAG), TextureInfo.MODE_ADD);
+        jacobiObjTwo.setTexture(jacobi_tiTwo);
+        jacobiObjTwo.setCulling(false);
+        jacobiObjTwo.compile();
+        displayWorld.addObject(jacobiObjTwo);
+        jacobiObjTwo.setVisibility(false);
+
 
         subGradientObj = Primitives.getPlane(4,10);
         subGradientObj.setOrigin(new SimpleVector(0.01, 0, 0));
@@ -562,6 +602,14 @@ public class PostProcessHandler {
         pressure.setMipmap(textureMipMap);
         pressure.setTextureCompression(textureCompression);// texture compression eliminates the artifacts
         tm.addTexture(PRESSURE_TEXTURE_TAG, pressure);
+
+
+
+        pressure2 = new NPOTTexture(width , height, RGBColor.BLACK);
+        pressure2.setFiltering(textureFiltering);
+        pressure2.setMipmap(textureMipMap);
+        pressure2.setTextureCompression(textureCompression);// texture compression eliminates the artifacts
+        tm.addTexture(PRESSURE_TEXTURE_TAG_TWO, pressure2);
 
         divergence = new NPOTTexture(width , height, RGBColor.BLACK);
         divergence.setFiltering(textureFiltering);
