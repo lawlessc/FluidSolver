@@ -150,9 +150,10 @@ public class PostProcessHandler {
 
 
     public TextureInfo subGradient_ti;
+    public TextureInfo subGradient_tiTwo;
     public GLSLShader subGradientShader = null;
     public Object3D subGradientObj = null;
-  //  public Object3D subGradientObjTwo = null;
+    public Object3D subGradientObjTwo = null;
 
     public World displayWorld;
     public Camera displayCam = null;
@@ -310,56 +311,77 @@ public class PostProcessHandler {
     impulseObj.setVisibility(false);
 
 
-    fb.setRenderTarget(divergence);
-    divergenceObj.setVisibility(true);
-    fb.clear();
-    displayWorld.renderScene(fb);
-    displayWorld.draw(fb);
-    fb.display();
-    divergenceObj.setVisibility(false);
+//    fb.setRenderTarget(divergence);
+//    divergenceObj.setVisibility(true);
+//    fb.clear();
+//    displayWorld.renderScene(fb);
+//    displayWorld.draw(fb);
+//    fb.display();
+//    divergenceObj.setVisibility(false);
+//
+//
+//    fb.setRenderTarget(pressure);
+//    fb.clear();
+//    fb.display();
+//
+//
+//    boolean jabobiSwitch =true;
+//    for(int i =1 ; i < JACOBI_ITERATIONS+1 ; i ++)
+//    {
+//
+//     if(jabobiSwitch) {
+//         jacobiObjTwo.setTexture("textureless");
+//         fb.setRenderTarget(pressure2);
+//         jacobiObj.setVisibility(true);
+//         fb.clear();
+//         displayWorld.renderScene(fb);
+//         displayWorld.draw(fb);
+//         fb.display();
+//         jacobiObj.setVisibility(false);
+//         jacobiObjTwo.setTexture(jacobi_tiTwo);
+//     }
+//     else {
+//         jacobiObj.setTexture("textureless");
+//         fb.setRenderTarget(pressure);
+//         jacobiObjTwo.setVisibility(true);
+//         fb.clear();
+//         displayWorld.renderScene(fb);
+//         displayWorld.draw(fb);
+//         fb.display();
+//         jacobiObjTwo.setVisibility(false);
+//         jacobiObj.setTexture(jacobi_ti);
+//
+//     }
+//
+//      jabobiSwitch ^=true;
+//
+//
+//    }
+//
+//
+//
+//
+//        if(velocityswitch) {
+//
+//            fb.setRenderTarget(velocity);
+//            subGradientObjTwo.setVisibility(true);
+//            fb.clear();
+//            displayWorld.renderScene(fb);
+//            displayWorld.draw(fb);
+//            subGradientObjTwo.setVisibility(false);
+//            fb.display();
+//        }
+//        else
+//        {
+//            fb.setRenderTarget(velocity2);
+//            subGradientObj.setVisibility(true);
+//            fb.clear();
+//            displayWorld.renderScene(fb);
+//            displayWorld.draw(fb);
+//            subGradientObj.setVisibility(false);
+//            fb.display();
+//        }
 
-
-    fb.setRenderTarget(pressure);
-    fb.clear();
-    fb.display();
-
-
-    boolean jabobiSwitch =true;
-    for(int i =1 ; i < JACOBI_ITERATIONS+1 ; i ++)
-    {
-
-     if(jabobiSwitch) {
-         fb.setRenderTarget(pressure2);
-         jacobiObj.setVisibility(true);
-         fb.clear();
-         displayWorld.renderScene(fb);
-         displayWorld.draw(fb);
-         fb.display();
-         jacobiObj.setVisibility(false);
-     }
-     else {
-         fb.setRenderTarget(pressure);
-         jacobiObj.setVisibility(true);
-         fb.clear();
-         displayWorld.renderScene(fb);
-         displayWorld.draw(fb);
-         fb.display();
-         jacobiObj.setVisibility(false);
-
-     }
-
-      jabobiSwitch ^=true;
-
-
-    }
-
-       fb.setRenderTarget(velocity);
-       subGradientObj.setVisibility(true);
-       fb.clear();
-       displayWorld.renderScene(fb);
-       displayWorld.draw(fb);
-       subGradientObj.setVisibility(false);
-       fb.display();
 
 
 
@@ -534,6 +556,23 @@ public class PostProcessHandler {
     //    subGradientObj.strip();
         displayWorld.addObject(subGradientObj);
         subGradientObj.setVisibility(false);
+
+        subGradientObjTwo = Primitives.getPlane(4,10);
+        subGradientObjTwo.setOrigin(new SimpleVector(0.01, 0, 0));
+        subtractHook = new SubtractHook(this,subGradientShader);
+        subGradientObjTwo.setCulling(false);
+        subGradientObjTwo.setShader(subGradientShader);
+        subGradientObjTwo.setRenderHook(subtractHook);
+        subGradient_tiTwo =new TextureInfo(TextureManager.getInstance().getTextureID(VELOCITY_TEXTURE_TAG_TWO));
+        subGradient_tiTwo.add(TextureManager.getInstance().getTextureID(PRESSURE_TEXTURE_TAG_TWO), TextureInfo.MODE_ADD);
+        subGradientObjTwo.setTexture(subGradient_ti);
+        subGradientObjTwo.compile();
+        //    subGradientObj.strip();
+        displayWorld.addObject(subGradientObj);
+        subGradientObjTwo.setVisibility(false);
+
+
+
 
       //Displays a texture. doesn't process
         displayObj = Primitives.getPlane(4,10);
